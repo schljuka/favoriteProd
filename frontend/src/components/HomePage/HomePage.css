@@ -1,7 +1,0 @@
-.home-page-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Da bi element bio centriran vertikalno */
-}
-

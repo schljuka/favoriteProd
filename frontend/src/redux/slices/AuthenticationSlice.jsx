@@ -179,12 +179,14 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+
 // Define initial state
 const initialState = {
-    user: {},
+    user: JSON.parse(localStorage.getItem('user')) ?? null,
     loading: false,
     isAuthenticated: false,
     error: null,
+
 };
 
 
@@ -204,55 +206,47 @@ export const registerUser = createAsyncThunk(
 
 
 
-// export const loginUser = createAsyncThunk(
-//     'api/login',
-//     async (user, thunkAPI) => {
-//         try {
-//             const req = await axios.post('http://localhost:5000/api/login', user);
-//             return req.data.user;
-//         } catch (e) {
-//             return thunkAPI.rejectWithValue(e);
-//         }
-//     }
-// )
-
-
 export const loginUser = createAsyncThunk(
     'api/login',
-    async (user, { rejectWithValue }) => {
+    async (user, thunkAPI) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/login', user);
-            const { token, user: userData } = response.data;
-            // Save token in a cookie
-            Cookies.set('token', token, { expires: 7 }); // Expires in 7 days
-            return userData;
-        } catch (error) {
-            // Return error value to be handled by Redux Toolkit
-            return rejectWithValue(error.response.data);
-        }
-    }
-);
-
-
-export const updateUser = createAsyncThunk(
-    'api/me/update',
-    async (payload, thunkAPI) => {
-        try {
-            const req = await axios.put('http://localhost:5000/api/me/update', payload);
-            return req.data.user;
+            const req = await axios.post('http://localhost:5000/api/login', user);
+                    return req.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
         }
     }
 )
 
+export const logout = createAsyncThunk(
+    'user/logout',
+    async (_, thunkAPI) => {
+        try {
+            const req = await axios.get('http://localhost:5000/api/logout');
+           
+             return req.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.req.data);
+        }
+    }
+);
+
+
+
+
+
+
 // Define user slice
-const userSlice = createSlice({
+const authenticationSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
         clearErrors(state) {
             state.error = null;
+        },
+        authenticateUser(state, action) {
+            state.user = action.payload.user;
+            state.isAuthenticated = true;
         },
     },
     extraReducers: (builder) => {
@@ -272,37 +266,44 @@ const userSlice = createSlice({
                 state.error = action.payload;
             })
 
-
-
             .addCase(loginUser.pending, (state) => {
                 state.loading = true;
+
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.isAuthenticated = true;
-                state.user = action.payload;
+                state.user = action.payload.user;
+
+                 localStorage.setItem('user', JSON.stringify(state.user))
+                localStorage.setItem('token', JSON.stringify(action.payload.token))
+
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
 
-
-            .addCase(updateUser.pending, (state) => {
+            .addCase(logout.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(updateUser.fulfilled, (state, action) => {
+            .addCase(logout.fulfilled, (state, action) => {
                 state.loading = false;
-                state.user = action.payload;
+                state.isAuthenticated = false;
+                state.user = null;
+                localStorage.removeItem('user')
+                localStorage.removeItem('token')
             })
-            .addCase(updateUser.rejected, (state, action) => {
+            .addCase(logout.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+
+
     },
 });
 
 // Export actions and reducer
-export const { clearErrors } = userSlice.actions;
-export default userSlice.reducer;
+export const { clearErrors, authenticateUser } = authenticationSlice.actions;
+export default authenticationSlice.reducer;
 

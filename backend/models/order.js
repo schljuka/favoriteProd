@@ -56,15 +56,22 @@ const orderSchema = mongoose.Schema({
             },
         }
     ],
-  
+    // paymentInfo: {
+    //     id: {
+    //         type: String
+    //     },
+    //     status: {
+    //         type: String
+    //     }
+    // },
     // paidAt: {
     //     type: Date
     // },
-    // itemsPrice: {
-    //     type: Number,
-    //     required: true,
-    //     default: 0.0
-    // },
+    itemsPrice: {
+        type: Number,
+        required: true,
+        default: 0.0
+    },
     // taxPrice: {
     //     type: Number,
     //     required: true,
@@ -88,10 +95,10 @@ const orderSchema = mongoose.Schema({
     // deliveredAt: {
     //     type: Date
     // },
-    // createAt: {
-    //     type: Date,
-    //     default: Date.now
-    // }
+    createAt: {
+        type: Date,
+        default: Date.now
+    }
 })
 
 

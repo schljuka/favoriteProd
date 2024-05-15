@@ -5,32 +5,55 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-d
 import HomePage from './components/HomePage/HomePage';
 import LoginPage from './components/user/Login'; // Pretpostavka: Imate LoginPage komponentu
 import Register from './components/user/Register';
-import ListProducts from "./components/ListProducts"
+import ListProducts from "./components/Product/ListProducts";
+import ProductDetails from './components/Product/ProductDetails';
+import NavBar from './components/NavBar/NavBar';
+import UpdateProfile from './components/user/UpdateProfile';
+import Profile from './components/user/Profile';
+import UpdatedPassword from './components/user/UpdatedPassword';
 
-// import { checkAuthentication } from './redux/slices/AuthenticationSlice';
+// import { authenticateUser } from "./redux/slices/AuthenticationSlice";
 
 import './App.css';
 
 function App() {
-    // const isAuthenticated = useSelector(state => state.authentication.isAuthenticated);
+
     // const dispatch = useDispatch();
 
-    // Provjeri autentikaciju čim se aplikacija pokrene
+    // const isAuthenticated = useSelector(state => state.authentication.isAuthenticated);
+
+
     // useEffect(() => {
-    //     if (!isAuthenticated) {
-    //         dispatch(checkAuthentication());
+    //     const storedUser = localStorage.getItem('user');
+    //     const storedToken = localStorage.getItem('token');
+
+    //     if (storedUser && storedToken) {
+    //         dispatch(authenticateUser({ user: JSON.parse(storedUser), token: storedToken }));
     //     }
     // }, [dispatch]);
 
     return (
         <Router>
+            <NavBar />
             <Routes>
                 {/* <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/login" />} /> */}
-                <Route path="/" element={<HomePage /> }/>
+                <Route path="/" element={<HomePage />} />
+              
+
+              
+
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/products" element={<ListProducts />} />
 
+                <Route path="/me" element={<Profile />} />
+                <Route path="/me/update" element={<UpdateProfile />} />
+                <Route path="/password/update" element={<UpdatedPassword />} />
+
+
+                <Route path="/products" element={<ListProducts />} />
+                <Route path="/products/query" element={<ListProducts />} />
+
+                <Route path="/product/:id" element={<ProductDetails />} />
 
             </Routes>
         </Router>

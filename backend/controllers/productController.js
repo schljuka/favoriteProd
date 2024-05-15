@@ -2,9 +2,9 @@ const Product = require('../models/product');
 
 const ErrorHandler = require('../utils/errorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors')
-const APIFeatures = require('../utils/apiFeatures');
+// const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary');
-
+const {search} = require("../utils/apiFeatures");
 
 
 // Create new product   /api/admin/product/new
@@ -46,57 +46,28 @@ exports.newProduct = catchAsyncErrors(async (req, res, next) => {
 
 
 // Get all products    /api/products?keyword=apple
-// exports.getProducts = catchAsyncErrors(async (req, res, next) => {
 
-
-//     const resPerPage = 6;
-
-//     const productsCount = await Product.countDocuments();
-
-//     const apiFeatures = new APIFeatures(Product.find(), req.query)
-//         .search()
-//         .filter()
-//         .pagination(resPerPage)
-
-//     const products = await apiFeatures.query;
-
-
-//     res.status(200).json({
-//         success: true,
-//         productsCount,
-//         resPerPage,
-//         products
-//     })
+exports.getProductsByQuery = catchAsyncErrors(async (req, res, next) => {
+    let { name, page = 1, limit = 6 } = req.query;
+    let products = await search(name, page, limit);
+    res.status(200).json({ message: "Retrieved products from query", page: products });
+})
 
 
 
-// })
 
 exports.getProducts = catchAsyncErrors(async (req, res, next) => {
-    const resPerPage = 6;
-    let productsCount;
-
-
-    if (req.query.category) {
-        productsCount = await Product.countDocuments({ category: req.query.category });
-    } else {
-        productsCount = await Product.countDocuments();
+    try {
+        const products = await Product.find(); // Koristimo Mongoose metod find() za dohvaćanje svih proizvoda
+        if (products)
+            res.status(200).json({ message: "Retrieved all products", products });
+    } catch (error) {
+        res.status(500).json({ message: "Unable to retrieve products at this time", error });
     }
-
-    const apiFeatures = new APIFeatures(Product.find(), req.query)
-        .search()
-        .filter()
-        .pagination(resPerPage)
-
-    const products = await apiFeatures.query;
-
-    res.status(200).json({
-        success: true,
-        productsCount,
-        resPerPage,
-        products
-    });
 });
+
+
+
 
 
 

@@ -12,21 +12,23 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
 
     const {
         orderItems,
-        shippingInfo,
+        // shippingInfo,
         itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice
+        // taxPrice,
+        // shippingPrice,
+        // totalPrice,
+        // paymentInfo
     } = req.body;
 
     const order = await Order.create({
         orderItems,
-        shippingInfo,
+        // shippingInfo,
         itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-        paidAt: Date.now(),
+        // taxPrice,
+        // shippingPrice,
+        // totalPrice,
+        // paymentInfo,
+        // paidAt: Date.now(),
         user: req.user._id
     })
 
@@ -41,7 +43,6 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
     })
 
 })
-
 
 // Get single  order    /api/order/:id
 exports.getSingleOrder = catchAsyncErrors(async (req, res, next) => {
@@ -130,7 +131,7 @@ exports.updateOrder = catchAsyncErrors(async (req, res, next) => {
         return next(new ErrorHandler('Order status remains unchanged', 400));
     }
 
-     if (order.orderStatus === 'Delivered') {
+    if (order.orderStatus === 'Delivered') {
         return next(new ErrorHandler('You have already delivered this order', 400))
     }
 
