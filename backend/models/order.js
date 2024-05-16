@@ -31,6 +31,10 @@ const orderSchema = mongoose.Schema({
         required: true,
         ref: 'User'
     },
+    userName: {  // Dodajemo polje za ime korisnika
+        type: String,
+        required: true
+    },
     orderItems: [
         {
             name: {

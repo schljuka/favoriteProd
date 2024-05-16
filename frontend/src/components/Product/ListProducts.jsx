@@ -12,35 +12,14 @@ import {  queryProducts } from '../../redux/slices/ProductSlice';
 
 const ListProducts = () => {
 
-    //     const dispatch = useDispatch();
-    //     const { products, loading, error } = useSelector(state => state.product);
 
-    //     useEffect(() => {
-    //         dispatch(fetchAllProducts());
-    //     }, []);
-
-    //     return (
-    //         <div className="container container-fluid">
-    //             {loading ? (
-    //                 <Loader />
-    //             ) : error ? (
-    //                 <div>Error occurred while fetching products.</div>
-    //             ) : (
-    //                 <div>
-    //                     {products.map(product => (
-    //                         <Product key={product._id} product={product} />
-
-    //                     ))}
-    //                 </div>
-    //             )}
-
-    //         </div>
-    //     );
-    // };
 
     const dispatch = useDispatch();
     const { products, loading, error } = useSelector(state => state.product);
     const location = useLocation();
+
+
+
 
     useEffect(() => {
         // Ako postoji pretraga, koristi queryProducts, inače fetchAllProducts
@@ -50,6 +29,8 @@ const ListProducts = () => {
             dispatch(fetchAllProducts());
         }
     }, [location.search]);
+
+
 
     return (
         <div className="container container-fluid">
@@ -66,7 +47,7 @@ const ListProducts = () => {
             )}
 
 
-            <CatalogSearchPageNavigator />
+            {/* <CatalogSearchPageNavigator /> */}
         </div>
 
 
@@ -75,4 +56,3 @@ const ListProducts = () => {
 
 
 export default ListProducts;
-

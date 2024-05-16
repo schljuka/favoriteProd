@@ -124,7 +124,6 @@ const ProductDetails = () => {
     const { loading, error } = useSelector(state => state.product);
     const [quantity, setQuantity] = useState(1);
     const user = useSelector(state => state.authentication);
-   
 
     useEffect(() => {
         dispatch(getProductDetails(id));
@@ -153,26 +152,20 @@ const ProductDetails = () => {
     };
 
     const addToCart = () => {
-    
-        if (!product || !product._id) {
-            console.error("Product or product ID is undefined.");
-            return;
-        }
-        if (!user || !user.user._id) {
-            console.error("User or user ID is undefined.");
-            return;
-        }
         const orderItems = [{
             product: product._id,
             name: product.name,
             price: product.price,
-            image: product.image,
+            image: product.images[0].url,
             quantity: quantity,
-            user: user.user._id // Dodajemo ID korisnika u objekat narudžbe
+            user: user.user._id,
+            userName: user.user.name // Dodajemo ID korisnika u objekat narudžbe
         }];
         dispatch(createOrder({ orderItems }));
+       if(dispatch){
+        alert("dodali smo u korpu")
+       }
     };
-
 
     return (
         <div>

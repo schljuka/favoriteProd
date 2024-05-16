@@ -20,6 +20,9 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
         // paymentInfo
     } = req.body;
 
+    const user = req.user;
+    
+
     const order = await Order.create({
         orderItems,
         // shippingInfo,
@@ -29,7 +32,8 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
         // totalPrice,
         // paymentInfo,
         // paidAt: Date.now(),
-        user: req.user._id
+        user: req.user._id,
+        userName: req.user.name,
     })
 
 
@@ -79,15 +83,15 @@ exports.allOrders = catchAsyncErrors(async (req, res, next) => {
 
     const orders = await Order.find();
 
-    let totalAmount = 0;
+    // let totalAmount = 0;
 
-    orders.forEach(order => {
-        totalAmount += order.totalPrice
-    })
+    // orders.forEach(order => {
+    //     totalAmount += order.totalPrice
+    // })
 
     res.status(200).json({
         success: true,
-        totalAmount,
+        // totalAmount,
         orders
     })
 

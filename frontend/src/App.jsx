@@ -11,7 +11,11 @@ import NavBar from './components/NavBar/NavBar';
 import UpdateProfile from './components/user/UpdateProfile';
 import Profile from './components/user/Profile';
 import UpdatedPassword from './components/user/UpdatedPassword';
-
+import OrdersList from './components/admin/OrdersList';
+import Sidebar from './components/admin/Sidebar';
+import NewProduct from './components/admin/NewProduct';
+import UpdateProduct from './components/admin/UpdateProduct';
+import AdminProductsList from './components/admin/AdminProductList';
 // import { authenticateUser } from "./redux/slices/AuthenticationSlice";
 
 import './App.css';
@@ -38,9 +42,9 @@ function App() {
             <Routes>
                 {/* <Route path="/" element={isAuthenticated ? <HomePage /> : <Navigate to="/login" />} /> */}
                 <Route path="/" element={<HomePage />} />
-              
 
-              
+
+
 
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<Register />} />
@@ -54,6 +58,16 @@ function App() {
                 <Route path="/products/query" element={<ListProducts />} />
 
                 <Route path="/product/:id" element={<ProductDetails />} />
+
+
+
+                <Route path="/admin/orders" element={<OrdersList />} />
+                <Route path="/dashboard" element={<Sidebar />} />
+                <Route path="/admin/product" element={<NewProduct />} />
+                <Route path="/admin/product/:id" element={<UpdateProduct />} />
+                <Route path="/admin/products" element={<AdminProductsList /> } />
+
+
 
             </Routes>
         </Router>

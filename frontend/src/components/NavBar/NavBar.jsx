@@ -12,6 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useState } from 'react';
 import { fetchAllProducts, queryProducts } from '../../redux/slices/ProductSlice';
+import { allOrders } from '../../redux/slices/OrderSlice';
 
 
 const NavBar = () => {
@@ -25,7 +26,7 @@ const NavBar = () => {
     const location = useLocation();
 
 
-
+ 
 
     const logoutHandler = () => {
         dispatch(logout());
@@ -45,6 +46,7 @@ const NavBar = () => {
         }
         dispatch(queryProducts(query));
         navigate(`/products/query${query}`);
+        setKeyword('');
     };
 
 
@@ -87,7 +89,7 @@ const NavBar = () => {
                     <div className="col-12 col-md-3 mt-4 mt-md-2 text-center cart">
                         <Link to="/cart" style={{ textDecoration: 'none' }}>
                             <span id="cart" className="ml-3">Cart</span>
-                            <span id="cart_count">33</span>
+                            <span id="cart_count">3333</span>
                         </Link>
 
                         {user ? (

@@ -17,7 +17,7 @@ export const updateUser = createAsyncThunk(
     'api/me/update',
     async (payload, thunkAPI) => {
         try {
-            const user = thunkAPI.getState().user.user; // Dobijamo trenutno prijavljenog korisnika iz stanja
+            const user = thunkAPI.getState().user.user;
             const req = await axios.put('http://localhost:5000/api/me/update', { ...payload, user });
             return req.data.user;
         } catch (e) {
@@ -26,18 +26,47 @@ export const updateUser = createAsyncThunk(
     }
 );
 
+
+// export const updatedPassword = createAsyncThunk(
+//     'api/password/update',
+//     async (userData, thunkAPI) => {
+//         try {
+//             const user = thunkAPI.getState().user.user;
+//             const req = await axios.put('http://localhost:5000/api/password/update', { ...userData, user }, {
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     // 'Authorization': `Bearer ${localStorage.getItem('token').replace('"','')}`
+//                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+//                 }
+//             });
+//             return req.data.user;
+//         } catch (e) {
+//             return thunkAPI.rejectWithValue(e);
+//         }
+//     }
+// );
+
 export const updatedPassword = createAsyncThunk(
     'api/password/update',
-    async (userData, thunkAPI) => {
+    async (payload, thunkAPI) => {
         try {
-            const user = thunkAPI.getState().user.user; // Dobijamo trenutno prijavljenog korisnika iz stanja
-            const req = await axios.put('http://localhost:5000/api/password/update', { ...userData, user });
+            const user = thunkAPI.getState().user.user;
+           
+            const req = await axios.put(`http://localhost:5000/api/password/update`, payload, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+      
             return req.data.user;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
         }
     }
 );
+
+
 
 // Define user slice
 const userSlice = createSlice({
@@ -56,7 +85,6 @@ const userSlice = createSlice({
 
 
         builder
-
 
             .addCase(updateUser.pending, (state) => {
                 state.loading = true;
@@ -89,4 +117,3 @@ const userSlice = createSlice({
 // Export actions and reducer
 export const { clearErrors, setCurrentUser } = userSlice.actions;
 export default userSlice.reducer;
-

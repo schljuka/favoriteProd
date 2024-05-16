@@ -6,20 +6,40 @@ const jwt = require('jsonwebtoken')
 
 
 // Checks if user is authenticated or not
+// ORIGINAL
+// exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
 
+//     const { token } = req.cookies
+
+//     if (!token) {
+//         return next(new ErrorHandler('Login first to acces this resource.', 401))
+//     }
+
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET)
+//     req.user = await User.findById(decoded.id);
+
+//     next();
+// })
+
+
+
+// STANISLAV
 exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
 
-    const { token } = req.cookies
-
-    if (!token) {
-        return next(new ErrorHandler('Login first to acces this resource.', 401))
+    const bearerHeader = req.headers['authorization'];
+    if (!bearerHeader) {
+        return res.sendStatus(403);
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    req.user = await User.findById(decoded.id);
-
+    else {
+        const bearerToken = bearerHeader.split(' ')[1];
+        let data = await jwt.verify(bearerToken, process.env.JWT_SECRET);
+        req.user = await User.findById(data.id);
+    }
     next();
 })
+
+
+
 
 
 // Handling users roles

@@ -53,6 +53,7 @@ exports.loginUser = catchAsyncErrors(async (req, res, next) => {
 
     // Finding user in database
     const user = await User.findOne({ email }).select('+password')
+   
 
     if (!user) {
         return next(new ErrorHandler('Invalid email or password', 401));
@@ -164,7 +165,7 @@ exports.getUserProfile = catchAsyncErrors(async (req, res, next) => {
 
 exports.updatePassword = catchAsyncErrors(async (req, res, next) => {
     const user = await User.findById(req.user.id).select('+password');
-
+ 
     // Check previous user password
     const isMatched = await user.comparePassword(req.body.oldPassword)
     if (!isMatched) {

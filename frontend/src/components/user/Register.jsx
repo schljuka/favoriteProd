@@ -35,7 +35,6 @@ const Register = () => {
             navigate('/')
         }
         if (error) {
-            console.log(error.message);
             toast.error("Something is wrong");
         }
 

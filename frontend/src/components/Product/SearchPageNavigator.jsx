@@ -8,22 +8,19 @@ import { calculatePaging } from "../../utils/CatalogUtils";
 
 
 export const CatalogSearchPageNavigator = () => {
-    const pagingInformation = useSelector(state => state.product.pagingInformation);
+  
 
+    const pagingInformation = useSelector(state => state.product.pagingInformation);
+   
     const navigate = useNavigate();
     const { search } = useLocation();
-    
+
 
     const navigatePrevious = () => {
-        if (pagingInformation && pagingInformation.currentPage !== 1) {
-            if (search.includes("&page=")) {
-                const splitString = search.split("&page=");
-                const newTerms = splitString[0] + `&page=${pagingInformation.currentPage - 1}`;
-                navigate(`/products${newTerms}`);
-            } else {
-                const newTerms = search + `&page=${pagingInformation.currentPage - 1}`;
-                navigate(`/products${newTerms}`);
-            }
+        if (pagingInformation && pagingInformation.currentPage > 1) { // Check if current page is greater than 1
+            const previousPage = pagingInformation.currentPage - 1;
+            const newTerms = search.includes("&page=") ? search.replace(/&page=\d+/, `&page=${previousPage}`) : `${search}&page=${previousPage}`;
+            navigate(`/products${newTerms}`);
         }
     }
 
@@ -38,17 +35,11 @@ export const CatalogSearchPageNavigator = () => {
             navigate(`/products${newTerms}`);
         }
     }
-
     const navigateNext = () => {
-        if (pagingInformation && pagingInformation.currentPage !== pagingInformation.totalPages) {
-            if (search.includes("&page=")) {
-                const splitString = search.split("&page=");
-                const newTerms = splitString[0] + `&page=${pagingInformation.currentPage + 1}`;
-                navigate(`/products${newTerms}`);
-            } else {
-                const newTerms = search + `&page=${pagingInformation.currentPage + 1}`;
-                navigate(`/products${newTerms}`);
-            }
+        if (pagingInformation && pagingInformation.currentPage < pagingInformation.totalPages) { // Check if current page is less than total pages
+            const nextPage = pagingInformation.currentPage + 1;
+            const newTerms = search.includes("&page=") ? search.replace(/&page=\d+/, `&page=${nextPage}`) : `${search}&page=${nextPage}`;
+            navigate(`/products${newTerms}`);
         }
     }
 

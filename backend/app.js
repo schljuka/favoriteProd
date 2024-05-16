@@ -17,15 +17,16 @@ app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(fileUpload());
-app.use(cors());
-
-
-// const corsOptions = {
-//     origin: 'http://localhost:5173',
-   
-// };
-
-// app.use(cors(corsOptions));
+app.use(cors({
+    origin: [
+        'http://localhost:5173'
+    ],
+    methods: ['GET', 'PUT', 'POST'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
+    credentials: true,
+    maxAge: 600,
+    exposedHeaders: ['*', 'Authorization']
+}));
 
 const products = require('./routes/product');
 const auth = require('./routes/auth');

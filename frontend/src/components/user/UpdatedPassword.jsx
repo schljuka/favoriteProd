@@ -13,32 +13,14 @@ import 'react-toastify/dist/ReactToastify.css';
 const UpdatedPassword = () => {
     const { id } = useParams();
     const isAuthenticated = useSelector(state => state.authentication.isAuthenticated);
-
     const dispatch = useDispatch();
 
     const { loading } = useSelector(state => state.user)
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const storedToken = localStorage.getItem('token');
-
-        if (storedUser && storedToken) {
-            dispatch(authenticateUser({ user: JSON.parse(storedUser), token: storedToken }));
-        }
-    }, [dispatch]);
-
-
-
     const [oldPassword, setOldPassword] = useState('')
     const [password, setPassword] = useState('')
-
-
-
-    useEffect(() => {
-
-    }, [])
 
 
     const submitHandler = (e) => {
@@ -48,7 +30,6 @@ const UpdatedPassword = () => {
         formData.set('password', password);
         dispatch(updatedPassword(id, formData))
     }
-
 
 
     return (

@@ -211,7 +211,8 @@ export const loginUser = createAsyncThunk(
     async (user, thunkAPI) => {
         try {
             const req = await axios.post('http://localhost:5000/api/login', user);
-                    return req.data;
+
+            return req.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
         }
@@ -223,8 +224,8 @@ export const logout = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             const req = await axios.get('http://localhost:5000/api/logout');
-           
-             return req.data;
+
+            return req.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.req.data);
         }
@@ -238,7 +239,7 @@ export const logout = createAsyncThunk(
 
 // Define user slice
 const authenticationSlice = createSlice({
-    name: 'user',
+    name: 'authentication',
     initialState,
     reducers: {
         clearErrors(state) {
@@ -275,8 +276,8 @@ const authenticationSlice = createSlice({
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
 
-                 localStorage.setItem('user', JSON.stringify(state.user))
-                localStorage.setItem('token', JSON.stringify(action.payload.token))
+                localStorage.setItem('user', JSON.stringify(state.user))
+                localStorage.setItem('token', action.payload.token)
 
             })
             .addCase(loginUser.rejected, (state, action) => {
