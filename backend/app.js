@@ -12,11 +12,14 @@ const errorMiddleware = require('./middlewares/errors')
 
 // Postavljanje config fajla
 dotenv.config({ path: 'backend/config/config.env' });
-
+app.use(bodyparser.json({limit: '50mb'}));
+app.use(bodyparser.urlencoded({limit: '50mb', extended: true}));
+app.use(express.json());
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(fileUpload());
+
 app.use(cors({
     origin: [
         'http://localhost:5173'

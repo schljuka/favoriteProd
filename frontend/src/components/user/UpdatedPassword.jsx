@@ -6,16 +6,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom';
 // import { updatePassword, clearErrors } from '../../actions/userActions';
 import { updatedPassword } from '../../redux/slices/UserSlice';
-import { authenticateUser } from "../../redux/slices/AuthenticationSlice";
 import toast from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 
 const UpdatedPassword = () => {
-    const { id } = useParams();
-    const isAuthenticated = useSelector(state => state.authentication.isAuthenticated);
-    const dispatch = useDispatch();
 
-    const { loading } = useSelector(state => state.user)
+    const { user, loading } = useSelector(state => state.authentication);
+    const dispatch = useDispatch();
+    const [keyword, setKeyword] = useState('');
 
     const navigate = useNavigate();
 
@@ -28,7 +26,11 @@ const UpdatedPassword = () => {
         const formData = new FormData();
         formData.set('oldPassword', oldPassword);
         formData.set('password', password);
-        dispatch(updatedPassword(id, formData))
+        dispatch(updatedPassword(formData))
+        if (dispatch) {
+            toast.success('Password Updated successfull');
+            navigate("/");
+        }
     }
 
 

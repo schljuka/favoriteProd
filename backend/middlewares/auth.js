@@ -33,6 +33,7 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
     else {
         const bearerToken = bearerHeader.split(' ')[1];
         let data = await jwt.verify(bearerToken, process.env.JWT_SECRET);
+        console.log(data)
         req.user = await User.findById(data.id);
     }
     next();

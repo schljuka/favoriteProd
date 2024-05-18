@@ -79,8 +79,9 @@ const NewProduct = () => {
                 formData.append('images', image)
             })
 
-            dispatch(addProduct(formData))
         }
+        dispatch(addProduct(formData))
+
     }
 
     const onChange = e => {
