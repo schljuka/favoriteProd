@@ -7,26 +7,20 @@ import { useDispatch, useSelector } from 'react-redux'
 import toast from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { getAdminProducts } from "../../redux/slices/ProductSlice"
+import { getAdminProducts, deleteProduct } from "../../redux/slices/ProductSlice"
 
 
-const ProductList = () => {
+const AdminProductList = () => {
 
     const navigate = useNavigate();
-
 
 
     const dispatch = useDispatch();
 
     const { products, loading } = useSelector(state => state.product)
 
-
     useEffect(() => {
-
         dispatch(getAdminProducts());
-
-
-
     }, [dispatch])
 
 
@@ -124,4 +118,6 @@ const ProductList = () => {
     )
 }
 
-export default ProductList;
+export default AdminProductList;
+
+

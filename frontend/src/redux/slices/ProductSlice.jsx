@@ -8,7 +8,7 @@ const initialState = {
     loading: true,
     error: false,
     products: [],
-    selectedProduct: [],
+    selectedProduct: {},
     pagingInformation: null
 }
 
@@ -72,43 +72,39 @@ export const addProduct = createAsyncThunk(
 );
 
 
-export const updateProduct = createAsyncThunk(
-    'api/admin/product',
-    async (productData, thunkAPI) => {
-        try {
-            const response = await axios.put(`http://localhost:5000/api/admin/product/${productData.id}`, productData.data,
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                }
-            );
-            return response.data.product;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error);
-        }
-    }
-);
-
-
-export const getSingleProduct = createAsyncThunk(
-    'product/getSingle',  // Ispravljeni type
+export const deleteProduct = createAsyncThunk(
+    'admin/product/:id',
     async (id, thunkAPI) => {
         try {
-            const response = await axios.get(`http://localhost:5000/api/admin/product/${id}`);
-            return response.data.product;
+            const response = await axios.delete(`http://localhost:5000/api/admin/product/${id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data.success;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error);
+            return thunkAPI.rejectWithValue(error.response.data.errMessage);
         }
     }
 );
+
+
+
+
+
 
 export const getAdminProducts = createAsyncThunk(
     'api/admin/products',
     async (_, thunkAPI) => {
         try {
-            const response = await axios.get('http://localhost:5000/api/admin/products');
+            const response = await axios.get('http://localhost:5000/api/admin/products',
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
             return response.data.products;
         } catch (error) {
             return thunkAPI.rejectWithValue(error);
@@ -116,6 +112,38 @@ export const getAdminProducts = createAsyncThunk(
     }
 );
 
+
+export const updateProduct = createAsyncThunk(
+    'admin/product/update',
+    async ({ id, updatedProductData }, thunkAPI) => {
+        try {
+            const response = await axios.put(`http://localhost:5000/api/admin/product/${id}`, updatedProductData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+           
+            return response.data.product;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error);
+        }
+    }
+);
+
+
+
+// export const getSingleProduct = createAsyncThunk(
+//     'api/admin/product',
+//     async (id, thunkAPI) => {
+//         try {
+//             const response = await axios.get(`http://localhost:5000/api/admin/product/${id}`);
+//             return response.data.product;
+//         } catch (error) {
+//             return thunkAPI.rejectWithValue(error);
+//         }
+//     }
+// );
 
 
 const productSlice = createSlice({
@@ -142,13 +170,11 @@ const productSlice = createSlice({
                 },
                     state.loading = false;
             })
-
-
-
             .addCase(fetchAllProducts.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || true;
             })
+
             .addCase(getProductDetails.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -193,7 +219,7 @@ const productSlice = createSlice({
             })
             .addCase(addProduct.fulfilled, (state, action) => {
                 state.error = false;
-                state.products.push(action.payload); // Dodajemo novi proizvod u listu
+                state.products.push(action.payload);
                 state.loading = false;
             })
             .addCase(addProduct.rejected, (state, action) => {
@@ -203,38 +229,8 @@ const productSlice = createSlice({
 
 
 
-            .addCase(updateProduct.pending, (state) => {
-                state.loading = true;
-                state.error = false;
-            })
-            .addCase(updateProduct.fulfilled, (state, action) => {
-                state.error = false;
-                // Ažuriramo podatke o ažuriranom proizvodu u stanju
-                const updatedProductIndex = state.products.findIndex(product => product._id === action.payload._id);
-                if (updatedProductIndex !== -1) {
-                    state.products[updatedProductIndex] = action.payload;
-                }
-                state.loading = false;
-            })
-            .addCase(updateProduct.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
 
 
-            .addCase(getSingleProduct.pending, (state) => {
-                state.loading = true;
-                state.error = false;
-            })
-            .addCase(getSingleProduct.fulfilled, (state, action) => {
-                state.loading = false;
-                state.error = false;
-                state.selectedProduct = action.payload;
-            })
-            .addCase(getSingleProduct.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
 
 
             .addCase(getAdminProducts.pending, (state) => {
@@ -251,9 +247,65 @@ const productSlice = createSlice({
                 state.error = action.payload;
             })
 
+            // .addCase(getSingleProduct.pending, (state) => {
+            //     state.loading = true;
+            //     state.error = false;
+            // })
+            // .addCase(getSingleProduct.fulfilled, (state, action) => {
+            //     state.loading = false;
+            //     state.error = false;
+            //     state.selectedProduct = action.payload;
+            // })
+            // .addCase(getSingleProduct.rejected, (state, action) => {
+            //     state.loading = false;
+            //     state.error = action.payload;
+            // })
+
+            .addCase(deleteProduct.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deleteProduct.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = action.payload;
+                state.products = state.products.filter(product => product._id !== action.meta.arg);
+            })
+            .addCase(deleteProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+            .addCase(updateProduct.pending, (state) => {
+                state.loading = true;
+                state.error = false;
+            })
+            // .addCase(updateProduct.fulfilled, (state, action) => {
+            //     console.log('Updated product data:', action.payload); // Log the updated product data
+            //     state.loading = false;
+            //     state.error = false;
+            //     state.products = state.products.map(product => {
+            //         if (product._id === action.payload._id) {
+            //             return action.payload; // Update product with matching id
+            //         }
+            //         return product;
+            //     });
+            // })
+
+            .addCase(updateProduct.fulfilled, (state, action) => {
+                state.loading = false;
+                state.products = action.payload;
+               
+            })
+
+            .addCase(updateProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
+
 
 
     }
 });
 
 export default productSlice.reducer;
+

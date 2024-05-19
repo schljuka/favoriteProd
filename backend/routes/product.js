@@ -24,15 +24,18 @@ router.route('/admin/products').get(getAdminProducts);
 
 router.route('/product/:id').get(getSingleProducts);
 
-router.route('/admin/product/new').post(isAuthenticatedUser, authorizeRoles('admin'), newProduct); 
-// router.route('/admin/product/new').post(newProduct);
+router.route('/admin/product/new').post(isAuthenticatedUser, authorizeRoles('admin'), newProduct);
+
 
 
 // router.route('/admin/product/:id').put(isAuthenticatedUser, authorizeRoles('admin'), updateProduct);
-router.route('/admin/product/:id').put(updateProduct);
+router.route('/admin/product/:id').put(isAuthenticatedUser, updateProduct);
 
 
-router.route('/admin/product/:id').delete(isAuthenticatedUser, authorizeRoles('admin'), deleteProduct);
+
+// router.route('/admin/product/:id').delete(isAuthenticatedUser, authorizeRoles('admin'), deleteProduct);
+router.route('/admin/product/:id').delete(isAuthenticatedUser, deleteProduct);
+
 
 
 

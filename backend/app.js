@@ -24,7 +24,7 @@ app.use(cors({
     origin: [
         'http://localhost:5173'
     ],
-    methods: ['GET', 'PUT', 'POST'],
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-csrf-token'],
     credentials: true,
     maxAge: 600,

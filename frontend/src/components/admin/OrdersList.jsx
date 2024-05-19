@@ -2,6 +2,7 @@
 
 
 
+
 import React, { Fragment, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
@@ -10,25 +11,25 @@ import Sidebar from './Sidebar';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
-import { allOrders } from '../../redux/slices/OrderSlice';
+import { allOrders, deleteOrder } from '../../redux/slices/OrderSlice';
 
 const OrdersList = () => {
 
     const { orders, loading } = useSelector(state => state.order);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
         dispatch(allOrders());
-
     }, [dispatch]);
 
+    const deleteOrderHandler = (id) => {
+        dispatch(deleteOrder(id));
 
-
-    const deleteOrderHandler = (orderId) => {
-        // Implement order deletion logic here
-        // dispatch(deleteOrder(orderId));
     }
+
+
     const setOrders = () => {
         const data = {
             columns: [
@@ -73,6 +74,10 @@ const OrdersList = () => {
     };
 
 
+
+
+
+
     return (
         <div className="row">
             <div className="col-12 col-md-2">
@@ -83,29 +88,21 @@ const OrdersList = () => {
                 <div>
                     <div className="container container-fluid tablemdb-w">
                         <h1 className="my-5">All Orders</h1>
-                        {loading ? (
-                            <Loader />
-                        ) : (
-                            orders && orders.length > 0 ? (
-                                <MDBDataTable
-                                    data={setOrders()}
-                                    className='px-3 mdbtable'
-                                    bordered
-                                    striped
-                                    hover
-                                />
-                            ) : (
-                                <p>No orders found.</p>
-                            )
+                        {loading ? <Loader /> : (
+
+                            <MDBDataTable
+                                data={setOrders()}
+                                className='px-3 mdbtable'
+                                bordered
+                                striped
+                                hover
+                            />
                         )}
                     </div>
                 </div>
             </div>
         </div>
     );
-
-
 };
 
 export default OrdersList;
-

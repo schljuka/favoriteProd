@@ -16,6 +16,7 @@ import Sidebar from './components/admin/Sidebar';
 import NewProduct from './components/admin/NewProduct';
 import UpdateProduct from './components/admin/UpdateProduct';
 import AdminProductsList from './components/admin/AdminProductList';
+import ProcessOrder from './components/admin/ProcessOrder';
 // import { authenticateUser } from "./redux/slices/AuthenticationSlice";
 
 import './App.css';
@@ -62,10 +63,13 @@ function App() {
 
 
                 <Route path="/admin/orders" element={<OrdersList />} />
+                <Route path="/admin/order/:id" element={<ProcessOrder />} />
+
+
                 <Route path="/dashboard" element={<Sidebar />} />
                 <Route path="/admin/product" element={<NewProduct />} />
                 <Route path="/admin/product/:id" element={<UpdateProduct />} />
-                <Route path="/admin/products" element={<AdminProductsList /> } />
+                <Route path="/admin/products" element={<AdminProductsList />} />
 
 
 

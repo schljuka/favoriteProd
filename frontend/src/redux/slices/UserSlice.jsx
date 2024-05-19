@@ -18,25 +18,7 @@ const initialState = {
 
 
 
-// export const updateUser = createAsyncThunk(
-//     'auth/update',
-//     async (payload, thunkAPI) => {
-//         try {
-//             const req = await axios.put('http://localhost:5000/api/me/update', payload,
-//                 {
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                         // 'Authorization': `Bearer ${localStorage.getItem('token').replace('"','')}`
-//                         'Authorization': `Bearer ${localStorage.getItem('token')}`
-//                     }
-//                 }
-//             );
-//             return req.data.user;
-//         } catch (e) {
-//             return thunkAPI.rejectWithValue(e);
-//         }
-//     }
-// )
+
 
 export const updateUser = createAsyncThunk(
     'auth/update',
@@ -69,7 +51,7 @@ export const updatedPassword = createAsyncThunk(
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            console.log(req);
+         
             return req.data.user;
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response.data.message || e.message);
@@ -88,7 +70,7 @@ export const fetchUserDetails = createAsyncThunk(
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
-            // console.log(response.data.user.name);
+          
             return response.data.user;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response.data.message || error.message);
@@ -96,25 +78,6 @@ export const fetchUserDetails = createAsyncThunk(
     }
 );
 
-// export const updatedPassword = createAsyncThunk(
-//     'api/password/update',
-//     async (payload, thunkAPI) => {
-//         try {
-//             const user = thunkAPI.getState().user.user;
-//            console.log(thunkAPI)
-//             const req = await axios.put(`http://localhost:5000/api/password/update`, thunkAPI.getState().passwordData, {
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'Authorization': `Bearer ${localStorage.getItem('token')}`
-//                 }
-//             });
-
-//             return req.data.user;
-//         } catch (e) {
-//             return thunkAPI.rejectWithValue(e);
-//         }
-//     }
-// );
 
 
 

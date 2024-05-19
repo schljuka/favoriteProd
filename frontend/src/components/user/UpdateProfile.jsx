@@ -25,7 +25,6 @@ const UpdateProfile = () => {
     const { user, loading } = useSelector(state => state.authentication);
    
 
-    console.log(isUpdated);
     useEffect(() => {
         if (user) {
             setName(user.name);
