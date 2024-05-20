@@ -81,7 +81,7 @@
 //                 formData.append('images', image)
 //             })
 //         }
-       
+
 //         // dispatch(updateProduct(product._id, formData))
 //         dispatch(updateProduct({ id: product._id, formData: formData }));
 
@@ -331,23 +331,19 @@ const UpdateProduct = () => {
                 formData.append('images', image)
             })
         }
-       
+
         // dispatch(updateProduct(product._id, formData))
         dispatch(updateProduct({ id: product._id, formData: formData }));
-
         //navigate("/admin/products");
         //toast.success('Product updated successfully')
     }
 
 
     const onChange = e => {
-
         const files = Array.from(e.target.files)
-
         setImagesPreview([]);
         setImages([]);
         setOldImages([]);
-
         files.forEach(file => {
             const reader = new FileReader();
 
@@ -359,7 +355,6 @@ const UpdateProduct = () => {
             }
             reader.readAsDataURL(file)
         })
-
     }
 
 

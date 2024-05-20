@@ -115,7 +115,9 @@ import Loader from "../layout/Loader";
 import { getProductDetails } from "../../redux/slices/ProductSlice";
 import { useParams } from 'react-router-dom';
 import { Carousel } from 'react-bootstrap';
-import { createOrder } from "../../redux/slices/OrderSlice";
+import { allOrders, createOrder } from "../../redux/slices/OrderSlice";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -159,12 +161,13 @@ const ProductDetails = () => {
             image: product.images[0].url,
             quantity: quantity,
             user: user.user._id,
-            userName: user.user.name // Dodajemo ID korisnika u objekat narudžbe
+            userName: user.user.name // 
         }];
         dispatch(createOrder({ orderItems }));
-       if(dispatch){
-        alert("dodali smo u korpu")
-       }
+        if (dispatch) {
+            toast.success("Item added in favorite cart")
+        }
+
     };
 
     return (
@@ -204,7 +207,10 @@ const ProductDetails = () => {
                         </div>
                     </div>
                 </div>
+
             )}
+            <ToastContainer />
+
         </div>
     );
 }

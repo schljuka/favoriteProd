@@ -21,12 +21,15 @@ const NavBar = () => {
     const dispatch = useDispatch();
     const [keyword, setKeyword] = useState('');
     const { user, error, loading } = useSelector(state => state.authentication);
+
+    const { orders } = useSelector(state => state.order);
+
     const nameRef = useRef(null);
 
     const location = useLocation();
 
 
- 
+
 
     const logoutHandler = () => {
         dispatch(logout());
@@ -35,7 +38,14 @@ const NavBar = () => {
 
     useEffect(() => {
         dispatch(queryProducts(location.search));
+
     }, [location.search]);
+
+    useEffect(() => {
+        if (user) {
+            dispatch(allOrders());
+        }
+    }, [dispatch,user])
 
 
     const searchHandler = (e) => {
@@ -89,7 +99,7 @@ const NavBar = () => {
                     <div className="col-12 col-md-3 mt-4 mt-md-2 text-center cart">
                         <Link to="/cart" style={{ textDecoration: 'none' }}>
                             <span id="cart" className="ml-3">Cart</span>
-                            <span id="cart_count">3333</span>
+                            <span id="cart_count">{orders[0]?.orderItems?.length || 0}</span>
                         </Link>
 
                         {user ? (

@@ -20,7 +20,6 @@ const ProcessOrder = () => {
 
     const order = useSelector(state => state.order.selectedOrder);
 
-    console.log(order);
 
 
 

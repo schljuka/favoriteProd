@@ -5,13 +5,15 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom';
 // import { updatePassword, clearErrors } from '../../actions/userActions';
-import { updatedPassword } from '../../redux/slices/UserSlice';
+import { updatedPassword, clearUpdateStatus } from '../../redux/slices/UserSlice';
 import toast from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 
 const UpdatedPassword = () => {
 
-    const { user, loading } = useSelector(state => state.authentication);
+
+    const { error, user, loading, isUpdated } = useSelector(state => state.user);
+
     const dispatch = useDispatch();
     const [keyword, setKeyword] = useState('');
 
@@ -20,6 +22,18 @@ const UpdatedPassword = () => {
     const [oldPassword, setOldPassword] = useState('')
     const [password, setPassword] = useState('')
 
+    useEffect(() => {
+        if (error) {
+            toast.error(error)
+        }
+        if (isUpdated) {
+            toast.success("Pasword successfully updated")
+            dispatch(clearUpdateStatus());
+            navigate("/")
+        }
+
+    }, [dispatch, error, isUpdated]);
+
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -27,10 +41,7 @@ const UpdatedPassword = () => {
         formData.set('oldPassword', oldPassword);
         formData.set('password', password);
         dispatch(updatedPassword(formData))
-        if (dispatch) {
-            toast.success('Password Updated successfull');
-            navigate("/");
-        }
+
     }
 
 

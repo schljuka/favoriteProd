@@ -95,6 +95,24 @@ export const getOrderDetails = createAsyncThunk(
 
 
 
+export const myOrders = createAsyncThunk(
+    '/me/order',
+    async (_, thunkAPI) => {
+        try {
+
+            const response = await axios.get(`http://localhost:5000/api/orders/me`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data.orders;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.errMessage);
+        }
+    }
+);
+
 
 
 
@@ -127,7 +145,7 @@ const orderSlice = createSlice({
 
 
 
-            .addCase(allOrders.pending, (state, action) => {
+            .addCase(allOrders.pending, (state) => {
                 state.loading = false;
                 state.error = false;
                 // state.orders = action.payload; // Ispravljeno ovdje
@@ -166,6 +184,22 @@ const orderSlice = createSlice({
                 state.selectedOrder = action.payload;
             })
             .addCase(getOrderDetails.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+            .addCase(myOrders.pending, (state) => {
+                state.loading = false;
+                state.error = false;
+
+            })
+            .addCase(myOrders.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = false;
+                state.orders = action.payload;
+            })
+            .addCase(myOrders.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

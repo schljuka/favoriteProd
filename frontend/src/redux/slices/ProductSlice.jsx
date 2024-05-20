@@ -123,7 +123,6 @@ export const updateProduct = createAsyncThunk(
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-           
             return response.data.product;
         } catch (error) {
             return thunkAPI.rejectWithValue(error);
@@ -133,17 +132,6 @@ export const updateProduct = createAsyncThunk(
 
 
 
-// export const getSingleProduct = createAsyncThunk(
-//     'api/admin/product',
-//     async (id, thunkAPI) => {
-//         try {
-//             const response = await axios.get(`http://localhost:5000/api/admin/product/${id}`);
-//             return response.data.product;
-//         } catch (error) {
-//             return thunkAPI.rejectWithValue(error);
-//         }
-//     }
-// );
 
 
 const productSlice = createSlice({
@@ -174,6 +162,8 @@ const productSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload || true;
             })
+
+
 
             .addCase(getProductDetails.pending, (state) => {
                 state.loading = true;
@@ -213,6 +203,7 @@ const productSlice = createSlice({
                 state.error = action.payload;
             })
 
+
             .addCase(addProduct.pending, (state) => {
                 state.loading = true;
                 state.error = false;
@@ -226,9 +217,6 @@ const productSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
-
-
-
 
 
 
@@ -247,19 +235,7 @@ const productSlice = createSlice({
                 state.error = action.payload;
             })
 
-            // .addCase(getSingleProduct.pending, (state) => {
-            //     state.loading = true;
-            //     state.error = false;
-            // })
-            // .addCase(getSingleProduct.fulfilled, (state, action) => {
-            //     state.loading = false;
-            //     state.error = false;
-            //     state.selectedProduct = action.payload;
-            // })
-            // .addCase(getSingleProduct.rejected, (state, action) => {
-            //     state.loading = false;
-            //     state.error = action.payload;
-            // })
+
 
             .addCase(deleteProduct.pending, (state) => {
                 state.loading = true;
@@ -275,26 +251,16 @@ const productSlice = createSlice({
             })
 
 
+
             .addCase(updateProduct.pending, (state) => {
                 state.loading = true;
                 state.error = false;
             })
-            // .addCase(updateProduct.fulfilled, (state, action) => {
-            //     console.log('Updated product data:', action.payload); // Log the updated product data
-            //     state.loading = false;
-            //     state.error = false;
-            //     state.products = state.products.map(product => {
-            //         if (product._id === action.payload._id) {
-            //             return action.payload; // Update product with matching id
-            //         }
-            //         return product;
-            //     });
-            // })
 
             .addCase(updateProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                state.products = action.payload;
-               
+                // state.products = action.payload;
+                state.selectedProduct = action.payload;
             })
 
             .addCase(updateProduct.rejected, (state, action) => {

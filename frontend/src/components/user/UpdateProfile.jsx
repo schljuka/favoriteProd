@@ -1,10 +1,9 @@
-import React, { Fragment, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { fetchUserDetails, updateUser } from '../../redux/slices/UserSlice';
+import { clearUpdateStatus, loadUser, updateProfile } from '../../redux/slices/UserSlice';
 
 
 
@@ -16,14 +15,13 @@ const UpdateProfile = () => {
     const [avatar, setAvatar] = useState('')
     const [avatarPreview, setAvatarPreview] = useState('/images/default_avatar.jpg')
 
-    const navigate = useNavigate();
 
 
 
     const dispatch = useDispatch();
 
     const { user, loading } = useSelector(state => state.authentication);
-   
+    const { isUpdated } = useSelector(state => state.user);
 
     useEffect(() => {
         if (user) {
@@ -31,8 +29,13 @@ const UpdateProfile = () => {
             setEmail(user.email);
             setAvatarPreview(user.avatar.url);
         }
-    }, [user]);
 
+        if (isUpdated) {
+            toast.success('Profil uspešno ažuriran'); // Prikaz poruke o uspešnom ažuriranju
+            dispatch(loadUser());
+            dispatch(clearUpdateStatus()); // Resetovanje isUpdated statusa
+        }
+    }, [user, isUpdated, dispatch]);
 
 
 
@@ -44,9 +47,7 @@ const UpdateProfile = () => {
         formData.set('name', name);
         formData.set('email', email);
         formData.set('avatar', avatar);
-        dispatch(updateUser(formData))
-
-        //dispatch(fetchUserDetails());
+        dispatch(updateProfile(formData))
     }
 
     const onChange = e => {
@@ -59,6 +60,8 @@ const UpdateProfile = () => {
         }
         reader.readAsDataURL(e.target.files[0])
     }
+
+
 
 
     return (

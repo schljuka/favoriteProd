@@ -8,45 +8,82 @@ const catchAsyncErrors = require('../middlewares/catchAsyncErrors')
 
 // Create a new order    /api/order/new
 
+// exports.newOrder = catchAsyncErrors(async (req, res, next) => {
+
+//     const {
+//         orderItems,
+//         itemsPrice,
+
+//     } = req.body;
+
+//     const user = req.user;
+
+
+//     const order = await Order.create({
+//         orderItems,
+
+//         itemsPrice,
+
+//         user: req.user._id,
+//         userName: req.user.name,
+//     })
+
+
+//     for (const item of orderItems) {
+//         await updateStock(item.product, item.quantity);
+//     }
+
+//     res.status(200).json({
+//         succes: true,
+//         order
+//     })
+
+// })
 exports.newOrder = catchAsyncErrors(async (req, res, next) => {
 
     const {
         orderItems,
-        // shippingInfo,
-        itemsPrice,
-        // taxPrice,
-        // shippingPrice,
-        // totalPrice,
-        // paymentInfo
     } = req.body;
 
     const user = req.user;
-    
 
-    const order = await Order.create({
-        orderItems,
-        // shippingInfo,
-        itemsPrice,
-        // taxPrice,
-        // shippingPrice,
-        // totalPrice,
-        // paymentInfo,
-        // paidAt: Date.now(),
-        user: req.user._id,
-        userName: req.user.name,
-    })
+    // Provera da li korisnik već ima postojeći redosled
+    let existingOrder = await Order.findOne({ user: req.user._id });
 
+    if (existingOrder) {
+        // Ako postoji, dodajte nove stavke u postojeći redosled
+        existingOrder.orderItems.push(...orderItems);
+        await existingOrder.save();
 
-    for (const item of orderItems) {
-        await updateStock(item.product, item.quantity);
+        for (const item of orderItems) {
+            await updateStock(item.product, item.quantity);
+        }
+
+        res.status(200).json({
+            success: true,
+            order: existingOrder
+        });
+    } else {
+
+        const order = await Order.create({
+            orderItems,
+
+            user: req.user._id,
+            userName: req.user.name,
+        });
+
+        for (const item of orderItems) {
+            await updateStock(item.product, item.quantity);
+        }
+
+        res.status(200).json({
+            success: true,
+            order
+        });
     }
+});
 
-    res.status(200).json({
-        succes: true,
-        order
-    })
 
-})
 
 // Get single  order    /api/order/:id
 exports.getSingleOrder = catchAsyncErrors(async (req, res, next) => {
@@ -69,7 +106,9 @@ exports.getSingleOrder = catchAsyncErrors(async (req, res, next) => {
 // Get loged in user orders      /api/orders/me
 exports.myOrders = catchAsyncErrors(async (req, res, next) => {
 
+
     const orders = await Order.find({ user: req.user.id })
+
 
     res.status(200).json({
         success: true,

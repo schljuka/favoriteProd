@@ -35,6 +35,7 @@ exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
         let data = await jwt.verify(bearerToken, process.env.JWT_SECRET);
       
         req.user = await User.findById(data.id);
+     
     }
     next();
 })

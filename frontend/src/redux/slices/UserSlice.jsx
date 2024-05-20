@@ -1,7 +1,6 @@
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
 
 
 
@@ -13,15 +12,16 @@ const initialState = {
     loading: false,
     isAuthenticated: false,
     error: null,
-  
+    isUpdated: false,
+    users: null,
 };
 
 
 
 
 
-export const updateUser = createAsyncThunk(
-    'auth/update',
+export const updateProfile = createAsyncThunk(
+    'api/update/profile',
     async (payload, thunkAPI) => {
         try {
             const req = await axios.put('http://localhost:5000/api/me/update', payload,
@@ -32,10 +32,9 @@ export const updateUser = createAsyncThunk(
                     }
                 }
             );
-          
-            return req.data; // Vraćamo cijeli odgovor s servera
+            return req.data;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e);
+            return thunkAPI.rejectWithValue(e.response.data.errMessage);
         }
     }
 );
@@ -51,17 +50,17 @@ export const updatedPassword = createAsyncThunk(
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-         
+
             return req.data.user;
         } catch (e) {
-            return thunkAPI.rejectWithValue(e.response.data.message || e.message);
+            return thunkAPI.rejectWithValue(e.response.data.errMessage);
         }
     }
 );
 
 
-export const fetchUserDetails = createAsyncThunk(
-    'user/fetchDetails',
+export const loadUser = createAsyncThunk(
+    'api/admin/users',
     async (_, thunkAPI) => {
 
         try {
@@ -70,13 +69,92 @@ export const fetchUserDetails = createAsyncThunk(
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
-          
             return response.data.user;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.response.data.message || error.message);
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
         }
     }
 );
+
+
+// admin 
+
+export const allUsers = createAsyncThunk(
+    'user/fetchDetails',
+    async (_, thunkAPI) => {
+
+        try {
+            const response = await axios.get('http://localhost:5000/api/admin/users', {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                },
+            });
+
+            return response.data.users;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+);
+
+export const deleteUser = createAsyncThunk(
+    'admin/user/:id',
+    async (id, thunkAPI) => {
+        try {
+            const response = await axios.delete(`http://localhost:5000/api/admin/user/${id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data.success;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.errMessage);
+        }
+    }
+);
+
+export const getUserDetails = createAsyncThunk(
+    'admin/user/',
+    async (id, thunkAPI) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/admin/user/${id}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data.user;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e);
+        }
+    }
+);
+
+
+
+export const updateUser = createAsyncThunk(
+    'api/admin/update/user',
+    async ({ id, formData }, thunkAPI) => {
+        try {
+            const req = await axios.put(`http://localhost:5000/api/admin/user/${id}`, formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            console.log(req.data);
+            return req.data;
+        } catch (e) {
+            return thunkAPI.rejectWithValue(e.response.data.errMessage);
+        }
+    }
+);
+
+
+
+
+
 
 
 
@@ -93,22 +171,28 @@ const userSlice = createSlice({
             state.user = action.payload;
             state.isAuthenticated = true;
         },
+        clearUpdateStatus(state) {
+            state.isUpdated = false; // Resetovanje isUpdated statusa
+        }
+
     },
     extraReducers: (builder) => {
 
 
         builder
 
-            .addCase(updateUser.pending, (state) => {
+            .addCase(updateProfile.pending, (state) => {
                 state.loading = true;
 
             })
-            .addCase(updateUser.fulfilled, (state, action) => {
+            .addCase(updateProfile.fulfilled, (state, action) => {
                 state.loading = false;
+                state.success = action.payload;
                 state.user = action.payload;
+                state.isUpdated = true;
 
             })
-            .addCase(updateUser.rejected, (state, action) => {
+            .addCase(updateProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
 
@@ -121,28 +205,95 @@ const userSlice = createSlice({
             .addCase(updatedPassword.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload;
-
+                state.isUpdated = true;
             })
+
             .addCase(updatedPassword.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+
             })
 
-            .addCase(fetchUserDetails.pending, (state) => {
+            .addCase(loadUser.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(fetchUserDetails.fulfilled, (state, action) => {
+            .addCase(loadUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload;
             })
-            .addCase(fetchUserDetails.rejected, (state, action) => {
+            .addCase(loadUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })
+
+
+            .addCase(allUsers.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(allUsers.fulfilled, (state, action) => {
+                state.loading = false;
+                state.users = action.payload;
+
+            })
+            .addCase(allUsers.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+            .addCase(deleteUser.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deleteUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = action.payload;
+                state.users = state.users.filter(user => user._id !== action.meta.arg);
+            })
+            .addCase(deleteUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+            .addCase(getUserDetails.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getUserDetails.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.user = action.payload;
+            })
+            .addCase(getUserDetails.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+
+            .addCase(updateUser.pending, (state) => {
+                state.loading = true;
+
+            })
+            .addCase(updateUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+                state.isUpdated = true;
+
+            })
+            .addCase(updateUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+
+            })
+
+
+
+
 
     },
 });
 
 // Export actions and reducer
-export const { clearErrors, setCurrentUser } = userSlice.actions;
+export const { clearErrors, setCurrentUser, clearUpdateStatus } = userSlice.actions;
 export default userSlice.reducer;
