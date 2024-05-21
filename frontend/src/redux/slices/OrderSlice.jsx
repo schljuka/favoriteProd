@@ -73,6 +73,68 @@ export const deleteOrder = createAsyncThunk(
     }
 );
 
+// export const deleteItemFromOrder = createAsyncThunk(
+//     '/api/order/item/:orderId/:itemId',
+//     async ({ orderId, itemId }, thunkAPI) => {
+//         try {
+//             const response = await axios.delete(`http://localhost:5000/api/order/${orderId}/item/${itemId}`, {
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     'Authorization': `Bearer ${localStorage.getItem('token')}`
+//                 }
+//             });
+//             return response.data.success;
+//         } catch (error) {
+//             return thunkAPI.rejectWithValue(error.response.data.errMessage);
+//         }
+//     }
+// );
+
+
+export const deleteItemFromOrder = createAsyncThunk(
+    '/api/order/item/:orderId/:itemId',
+    async ({ orderId, itemId }, thunkAPI) => {
+        try {
+            // Delete the item from the order
+            await axios.delete(`http://localhost:5000/api/order/${orderId}/item/${itemId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            // Fetch the updated order details
+            const response = await axios.get(`http://localhost:5000/api/order/${orderId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            const updatedOrder = response.data.order;
+
+            // If the order is empty, delete the entire order
+            if (updatedOrder.orderItems.length === 0) {
+                await axios.delete(`http://localhost:5000/api/admin/order/${orderId}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+                return { success: true, orderDeleted: true, orderId };
+            }
+
+            return { success: true, orderDeleted: false, updatedOrder };
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.errMessage);
+        }
+    }
+);
+
+
+
+
+
 export const getOrderDetails = createAsyncThunk(
     '/admin/order/:id',
     async (id, thunkAPI) => {
@@ -200,6 +262,30 @@ const orderSlice = createSlice({
                 state.orders = action.payload;
             })
             .addCase(myOrders.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+
+            .addCase(deleteItemFromOrder.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deleteItemFromOrder.fulfilled, (state, action) => {
+                state.loading = false;
+                state.success = action.payload;
+
+                if (action.payload.orderDeleted) {
+                    state.orders = state.orders.filter(order => order._id !== action.payload.orderId);
+                } else {
+                    const updatedOrder = action.payload.updatedOrder;
+                    state.orders = state.orders.map(order =>
+                        order._id === updatedOrder._id ? updatedOrder : order
+                    );
+                }
+
+            })
+            .addCase(deleteItemFromOrder.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

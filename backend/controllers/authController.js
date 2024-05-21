@@ -85,7 +85,8 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
 
     // Create reset password url
-    const resetUrl = `${req.protocol}://${req.get('host')}/password/reset/${resetToken}`
+    // const resetUrl = `${req.protocol}://${req.get('host')}/password/reset/${resetToken}`
+    const resetUrl = `${req.protocol}://localhost:5173/password/reset/${resetToken}`
 
 
     const message = `Your password reset token is as follow:\n\n${resetUrl}\n\n If you have not requested this email, then ignore it.`
@@ -214,7 +215,8 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
     })
 
     res.status(200).json({
-        success: true
+        success: true,
+        user:user
     })
 
 })

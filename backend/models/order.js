@@ -71,11 +71,11 @@ const orderSchema = mongoose.Schema({
     // paidAt: {
     //     type: Date
     // },
-    itemsPrice: {
-        type: Number,
-        required: true,
-        default: 0.0
-    },
+    // itemsPrice: {
+    //     type: Number,
+    //     required: true,
+    //     default: 0.0
+    // },
     // taxPrice: {
     //     type: Number,
     //     required: true,

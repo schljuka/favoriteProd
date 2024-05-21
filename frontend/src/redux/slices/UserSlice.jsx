@@ -14,6 +14,7 @@ const initialState = {
     error: null,
     isUpdated: false,
     users: null,
+    message: "",
 };
 
 
@@ -66,12 +67,48 @@ export const loadUser = createAsyncThunk(
         try {
             const response = await axios.get('http://localhost:5000/api/me', {
                 headers: {
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
             return response.data.user;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
+        }
+    }
+);
+
+export const forgotPassword = createAsyncThunk(
+    'api/password/forgot',
+    async (email, thunkAPI) => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/password/forgot', email, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data.message);
+        }
+    }
+);
+
+
+export const resetPassword = createAsyncThunk(
+    'api/password/reset',
+    async (payload) => {
+        try {
+            const response = await axios.put(`http://localhost:5000/api/password/reset/${payload.token}`, payload.formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data;
+        } catch (e) {
+            return (e.response.data.errMessage);
         }
     }
 );
@@ -143,7 +180,6 @@ export const updateUser = createAsyncThunk(
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             });
-            console.log(req.data);
             return req.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e.response.data.errMessage);
@@ -173,6 +209,9 @@ const userSlice = createSlice({
         },
         clearUpdateStatus(state) {
             state.isUpdated = false; // Resetovanje isUpdated statusa
+        },
+        clearMessage(state) {
+            state.message = null; // Clear the success message for forgot password
         }
 
     },
@@ -188,10 +227,11 @@ const userSlice = createSlice({
             .addCase(updateProfile.fulfilled, (state, action) => {
                 state.loading = false;
                 state.success = action.payload;
-                state.user = action.payload;
+                state.user = action.payload.user;
+                localStorage.setItem("user", JSON.stringify(action.payload.user))
                 state.isUpdated = true;
-
             })
+
             .addCase(updateProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
@@ -289,11 +329,40 @@ const userSlice = createSlice({
 
 
 
+            .addCase(forgotPassword.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(forgotPassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.message = action.payload;
+
+            })
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(resetPassword.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(resetPassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload;
+                state.isUpdated = true;
+            })
+
+            .addCase(resetPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+
+
 
 
     },
 });
 
 // Export actions and reducer
-export const { clearErrors, setCurrentUser, clearUpdateStatus } = userSlice.actions;
+export const { clearErrors, setCurrentUser, clearUpdateStatus, clearMessage } = userSlice.actions;
 export default userSlice.reducer;

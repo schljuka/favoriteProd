@@ -71,7 +71,7 @@ const ProcessOrder = () => {
                                         <hr />
                                     </>
                                 ) : (
-                                    <p>No order details available.</p>
+                                    <p className='mt-5'>No order details available.</p>
                                 )}
                             </div>
                         </div>

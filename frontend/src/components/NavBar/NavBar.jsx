@@ -12,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useState } from 'react';
 import { fetchAllProducts, queryProducts } from '../../redux/slices/ProductSlice';
-import { allOrders } from '../../redux/slices/OrderSlice';
+import { myOrders } from '../../redux/slices/OrderSlice';
 
 
 const NavBar = () => {
@@ -20,14 +20,13 @@ const NavBar = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [keyword, setKeyword] = useState('');
-    const { user, error, loading } = useSelector(state => state.authentication);
+    const { user, loading } = useSelector(state => state.authentication);
+
 
     const { orders } = useSelector(state => state.order);
-
     const nameRef = useRef(null);
 
     const location = useLocation();
-
 
 
 
@@ -36,16 +35,18 @@ const NavBar = () => {
         toast.success('Logged out successfully')
     }
 
+
     useEffect(() => {
         dispatch(queryProducts(location.search));
-
     }, [location.search]);
 
     useEffect(() => {
         if (user) {
-            dispatch(allOrders());
+            dispatch(myOrders());
         }
-    }, [dispatch,user])
+    }, [dispatch, user])
+
+
 
 
     const searchHandler = (e) => {

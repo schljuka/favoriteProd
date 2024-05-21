@@ -8,7 +8,8 @@ const {
     getSingleProducts,
     updateProduct,
     deleteProduct,
-    getAdminProducts
+    getAdminProducts,
+    getProductsByPagination
 } = require('../controllers/productController')
 
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth')
@@ -19,6 +20,8 @@ const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth')
 module.exports = router;
 router.route('/products').get(getProducts);
 router.route('/products/query').get(getProductsByQuery);
+
+router.route('/products/all').get(getProductsByPagination);
 
 router.route('/admin/products').get(getAdminProducts);
 

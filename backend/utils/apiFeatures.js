@@ -1,49 +1,3 @@
-// class APIFeatures {
-//     constructor(query, queryStr) {
-//         this.query = query;
-//         this.queryStr = queryStr;
-//     }
-
-//     search() {
-//         const { keyword } = this.queryStr || '';
-//         const searchQuery = keyword ? { name: { $regex: keyword, $options: 'i' } } : {};
-
-//         this.query = this.query.find({ ...searchQuery });
-//         return this;
-//     }
-
-
-//     filter() {
-//         // Make a copy of queryStr
-//         const queryCopy = { ...this.queryStr }; // Change this.queryStr to this.queryParams
-
-//         // Removing fields from the query
-//         const removeFields = ['keyword', 'limit', 'page'];
-//         removeFields.forEach(el => delete queryCopy[el]);
-
-//         // Convert queryCopy to MongoDB query syntax
-//         let queryStr = JSON.stringify(queryCopy);
-//         queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`);
-
-//         // Parse the modified query string and apply the filter
-//         this.query = this.query.find(JSON.parse(queryStr));
-
-//         return this;
-//     }
-
-//     pagination(resPerPage) {
-//         const currentPage = Number(this.queryStr.page) || 1;
-//         const skip = resPerPage * (currentPage - 1);
-
-//         this.query = this.query.limit(resPerPage).skip(skip);
-//         return this;
-//     }
-
-
-// }
-
-// module.exports = APIFeatures;
-
 
 
 const Product = require("../models/product");
@@ -65,8 +19,8 @@ async function search(name, page, limit) {
 
         return paginateProducts(filteredProduct, page, limit);
     } catch (error) {
-        console.error("Greška prilikom pretrage proizvoda:", error);
-        return { error: "Greška prilikom pretrage proizvoda" };
+        console.error("Error with search product: ", error);
+        return { error: "Error with search product:" };
     }
 }
 
@@ -97,4 +51,32 @@ async function paginateProducts(products, page, limit) {
 }
 
 
-module.exports = { search };
+
+
+
+
+
+async function paginateAllProducts(page, limit) {
+    try {
+        const totalCount = await Product.countDocuments();
+        const totalPages = Math.ceil(totalCount / limit);
+
+        const products = await Product.find()
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+        return {
+            totalCount,
+            currentPage: page,
+            totalPages,
+            limit,
+            pageCount: products.length,
+            items: products
+        };
+    } catch (error) {
+        console.error("Error paginating products:", error);
+        return { error: "Error paginating products." };
+    }
+}
+
+module.exports = { search, paginateAllProducts };

@@ -10,9 +10,7 @@ import Loader from '../layout/Loader';
 const Profile = () => {
 
     const { user, loading } = useSelector(state => state.authentication)
-    // const isAuthenticated = useSelector(state => state.authentication.isAuthenticated);
-
-
+  
     return (
         <div>
             {loading ? <Loader /> : (

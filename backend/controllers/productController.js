@@ -4,7 +4,7 @@ const ErrorHandler = require('../utils/errorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors')
 // const APIFeatures = require('../utils/apiFeatures');
 const cloudinary = require('cloudinary');
-const {search} = require("../utils/apiFeatures");
+const { search, paginateAllProducts } = require("../utils/apiFeatures");
 
 
 // Create new product   /api/admin/product/new
@@ -58,7 +58,7 @@ exports.getProductsByQuery = catchAsyncErrors(async (req, res, next) => {
 
 exports.getProducts = catchAsyncErrors(async (req, res, next) => {
     try {
-        const products = await Product.find(); // Koristimo Mongoose metod find() za dohvaćanje svih proizvoda
+        const products = await Product.find(); 
         if (products)
             res.status(200).json({ message: "Retrieved all products", products });
     } catch (error) {
@@ -66,6 +66,14 @@ exports.getProducts = catchAsyncErrors(async (req, res, next) => {
     }
 });
 
+
+exports.getProductsByPagination = catchAsyncErrors(async (req, res, next) => {
+    const { page = 1, limit = 6 } = req.query;
+
+    const products = await paginateAllProducts(parseInt(page), parseInt(limit));
+
+    res.status(200).json(products);
+});
 
 
 

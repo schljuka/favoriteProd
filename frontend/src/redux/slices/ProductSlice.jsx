@@ -9,7 +9,8 @@ const initialState = {
     error: false,
     products: [],
     selectedProduct: {},
-    pagingInformation: null
+    pagingInformation: null,
+    paging: null,
 }
 
 export const fetchAllProducts = createAsyncThunk(
@@ -17,13 +18,26 @@ export const fetchAllProducts = createAsyncThunk(
     async (_, thunkAPI) => { // Uklanjamo nepotrebni payload
         try {
             const response = await axios.get('http://localhost:5000/api/products');
-
             return response.data.products;
         } catch (error) {
             return thunkAPI.rejectWithValue(error); // Direktno vraćamo objekat greške
         }
     }
 );
+
+export const fetchProductsByPage = createAsyncThunk(
+    'api/productsByPage',
+    async ({ page = 1, limit = 6 }, thunkAPI) => {
+        try {
+            const response = await axios.get(`http://localhost:5000/api/products/all?page=${page}&limit=${limit}`);
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error); // Directly return the error object
+        }
+    }
+);
+
+
 
 export const getProductDetails = createAsyncThunk(
     'api/product',
@@ -115,9 +129,10 @@ export const getAdminProducts = createAsyncThunk(
 
 export const updateProduct = createAsyncThunk(
     'admin/product/update',
-    async ({ id, updatedProductData }, thunkAPI) => {
+    async (payload) => {
+        
         try {
-            const response = await axios.put(`http://localhost:5000/api/admin/product/${id}`, updatedProductData, {
+            const response = await axios.put(`http://localhost:5000/api/admin/product/${payload.id}`, payload.formData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -125,7 +140,7 @@ export const updateProduct = createAsyncThunk(
             });
             return response.data.product;
         } catch (error) {
-            return thunkAPI.rejectWithValue(error);
+            return (error);
         }
     }
 );
@@ -162,6 +177,34 @@ const productSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload || true;
             })
+
+
+
+
+
+            .addCase(fetchProductsByPage.pending, (state) => {
+                state.loading = true;
+                state.error = false;
+            })
+            .addCase(fetchProductsByPage.fulfilled, (state, action) => {
+                state.error = false;
+                state.products = action.payload.items;
+                state.paging = {
+                    totalCount: action.payload.totalCount,
+                    currentPage: action.payload.currentPage,
+                    totalPages: action.payload.totalPages,
+                    limit: action.payload.limit,
+                    pageCount: action.payload.pageCount,
+                };
+                state.loading = false;
+            })
+            .addCase(fetchProductsByPage.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || true;
+            })
+
+
+
 
 
 
@@ -259,7 +302,7 @@ const productSlice = createSlice({
 
             .addCase(updateProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                // state.products = action.payload;
+                state.products = action.payload;
                 state.selectedProduct = action.payload;
             })
 

@@ -3,15 +3,14 @@
 
 
 
-import React, { Fragment, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
-import Loader from "../layout/Loader";
-import Sidebar from './Sidebar';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import toast from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { allOrders, deleteOrder } from '../../redux/slices/OrderSlice';
+import Loader from "../layout/Loader";
+import Sidebar from './Sidebar';
 
 const OrdersList = () => {
 
@@ -79,6 +78,7 @@ const OrdersList = () => {
 
 
     return (
+
         <div className="row">
             <div className="col-12 col-md-2">
                 <Sidebar />
@@ -102,6 +102,7 @@ const OrdersList = () => {
                 </div>
             </div>
         </div>
+
     );
 };
 

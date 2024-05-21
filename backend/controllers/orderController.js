@@ -56,7 +56,7 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
         await existingOrder.save();
 
         for (const item of orderItems) {
-            await updateStock(item.product, item.quantity);
+            await updateStock(item.product, -item.quantity);
         }
 
         res.status(200).json({
@@ -67,13 +67,12 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
 
         const order = await Order.create({
             orderItems,
-
             user: req.user._id,
             userName: req.user.name,
         });
 
         for (const item of orderItems) {
-            await updateStock(item.product, item.quantity);
+            await updateStock(item.product, -item.quantity);
         }
 
         res.status(200).json({
@@ -216,3 +215,48 @@ exports.deleteOrder = catchAsyncErrors(async (req, res, next) => {
     })
 
 })
+
+
+
+
+exports.deleteItemFromOrder = catchAsyncErrors(async (req, res, next) => {
+    const { orderId, itemId } = req.params;
+
+    // Find the order by ID
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+        return next(new ErrorHandler('No order found with this ID', 404));
+    }
+
+    // Find the index of the item to be removed
+    const itemIndex = order.orderItems.findIndex(item => item._id.toString() === itemId);
+
+    if (itemIndex === -1) {
+        return next(new ErrorHandler('No item found with this ID in the order', 404));
+    }
+
+    // Remove the item from the order
+    const item = order.orderItems[itemIndex];
+    order.orderItems.splice(itemIndex, 1);
+
+    // Update the stock of the removed item
+    await updateStock(item.product, +item.quantity); // Restore the stock by adding back the quantity
+
+    // Save the updated order
+    await order.save();
+
+    res.status(200).json({
+        success: true,
+        order
+    });
+});
+
+// Update the stock function
+async function updateStock(id, quantity) {
+    const product = await Product.findById(id);
+
+    product.stock = product.stock + quantity;
+
+    await product.save({ validateBeforeSave: false });
+}

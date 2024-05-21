@@ -13,7 +13,7 @@ const ListOrders = () => {
 
     useEffect(() => {
         dispatch(myOrders());
-    }, [dispatch, error]);
+    }, [dispatch]);
 
     return (
         <div className="col-12 col-md-10">
@@ -54,7 +54,7 @@ const ListOrders = () => {
                                     </div>
                                 ))
                             ) : (
-                                <p>No orders available.</p>
+                                <p className='mt-5'>You don't have any orders.</p>
                             )}
                         </div>
                     </div>

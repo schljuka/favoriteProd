@@ -79,3 +79,16 @@ export function calculatePaging(pageInfo) {
 
     return pArr;
 }
+
+
+
+
+// utils/CatalogUtils.js
+export const calculatePagingAll = (paging) => {
+    const pageNumbers = [];
+    for (let i = 1; i <= paging.totalPages; i++) {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  };
+  

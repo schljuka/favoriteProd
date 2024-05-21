@@ -4,20 +4,20 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./SearchPageNavigator.css"
 
 
-import { calculatePaging } from "../../utils/CatalogUtils";
+import { calculatePagingAll } from "../../utils/CatalogUtils";
 
 
 export const CatalogSearchPageNavigator = () => {
-  
+
 
     const pagingInformation = useSelector(state => state.product.pagingInformation);
-   
+
     const navigate = useNavigate();
     const { search } = useLocation();
 
 
     const navigatePrevious = () => {
-        if (pagingInformation && pagingInformation.currentPage > 1) { // Check if current page is greater than 1
+        if (pagingInformation && pagingInformation.currentPage > 1) {
             const previousPage = pagingInformation.currentPage - 1;
             const newTerms = search.includes("&page=") ? search.replace(/&page=\d+/, `&page=${previousPage}`) : `${search}&page=${previousPage}`;
             navigate(`/products${newTerms}`);
@@ -43,12 +43,16 @@ export const CatalogSearchPageNavigator = () => {
         }
     }
 
+    if (!pagingInformation) {
+        return null;
+    }
+
     return (
 
         <div className="catalog-search-page-navigator">
             <p className="catalog-search-page-navigator-navigate" onClick={navigatePrevious}>Prev</p>
             <div className="catalog-search-page-numbers">
-                {pagingInformation && calculatePaging(pagingInformation).map((num) => {
+                {pagingInformation && calculatePagingAll(pagingInformation).map((num) => {
                     if (num === `${pagingInformation.currentPage}`) return <p key={num} className="catalog-search-page-number number-active">{num}</p>
 
                     return <p key={num} id={num} className="catalog-search-page-number" onClick={navigateToNumber}>{num}</p>

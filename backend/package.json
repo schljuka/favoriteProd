@@ -23,6 +23,7 @@
     "mongoose": "^8.3.4",
     "nodemailer": "^6.9.13",
     "nodemon": "^3.1.0",
+    "safe-buffer": "^5.2.1",
     "validator": "^13.12.0"
   }
 }

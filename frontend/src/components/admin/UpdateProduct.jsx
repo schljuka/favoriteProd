@@ -333,8 +333,8 @@ const UpdateProduct = () => {
         }
 
         // dispatch(updateProduct(product._id, formData))
-        dispatch(updateProduct({ id: product._id, formData: formData }));
-        //navigate("/admin/products");
+        dispatch(updateProduct({ id: product._id, formData:formData }));
+        navigate("/admin/products");
         //toast.success('Product updated successfully')
     }
 
