@@ -4,13 +4,14 @@ import ListProducts from "../Product/ListProducts";
 
 
 
-
 export default function HomePage() {
 
 
     return (
-        <ListProducts />
+        <>
 
+            <ListProducts />
+        </>
     );
 }
 

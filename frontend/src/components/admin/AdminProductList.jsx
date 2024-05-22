@@ -1,19 +1,15 @@
-import React, { Fragment, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import { MDBDataTable } from 'mdbreact'
+import React, { Fragment, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import 'react-toastify/dist/ReactToastify.css'
 import Loader from '../layout/Loader'
 import Sidebar from './Sidebar'
-import { useDispatch, useSelector } from 'react-redux'
-import toast from 'react-hot-toast';
-import 'react-toastify/dist/ReactToastify.css';
 
-import { getAdminProducts, deleteProduct } from "../../redux/slices/ProductSlice"
+import { deleteProduct, getAdminProducts } from "../../redux/slices/ProductSlice"
 
 
 const AdminProductList = () => {
-
-    const navigate = useNavigate();
-
 
     const dispatch = useDispatch();
 

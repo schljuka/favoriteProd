@@ -1,11 +1,8 @@
-import React, { Fragment, useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import Loader from '../layout/Loader'
-import Sidebar from './Sidebar'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import toast from 'react-hot-toast';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { Link, useParams } from 'react-router-dom'
+import 'react-toastify/dist/ReactToastify.css'
+import Sidebar from './Sidebar'
 import { getOrderDetails } from "../../redux/slices/OrderSlice"
 
 
@@ -13,13 +10,11 @@ import { getOrderDetails } from "../../redux/slices/OrderSlice"
 const ProcessOrder = () => {
 
     const { id } = useParams();
-    const navigate = useNavigate();
 
     const dispatch = useDispatch();
 
 
     const order = useSelector(state => state.order.selectedOrder);
-
 
 
 

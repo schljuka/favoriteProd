@@ -48,34 +48,49 @@ exports.newProduct = catchAsyncErrors(async (req, res, next) => {
 // Get all products    /api/products?keyword=apple
 
 exports.getProductsByQuery = catchAsyncErrors(async (req, res, next) => {
-    let { name, page = 1, limit = 6 } = req.query;
-    let products = await search(name, page, limit);
+    const { query, page = 1, limit = 6 } = req.query;
+    let products;
+
+    if (query) {
+        products = await search(query, page, limit);
+    } else {
+        return res.status(400).json({ error: "Please provide a query for the search." });
+    }
+
     res.status(200).json({ message: "Retrieved products from query", page: products });
-})
+});
 
 
+
+// exports.getProducts = catchAsyncErrors(async (req, res, next) => {
+//     try {
+//         const products = await Product.find(); 
+//         if (products)
+//             res.status(200).json({ message: "Retrieved all products", products });
+//     } catch (error) {
+//         res.status(500).json({ message: "Unable to retrieve products at this time", error });
+//     }
+// });
 
 
 exports.getProducts = catchAsyncErrors(async (req, res, next) => {
-    try {
-        const products = await Product.find(); 
-        if (products)
-            res.status(200).json({ message: "Retrieved all products", products });
-    } catch (error) {
-        res.status(500).json({ message: "Unable to retrieve products at this time", error });
-    }
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    const skip = (page - 1) * limit;
+    
+    const totalCount = await Product.countDocuments();
+    const products = await Product.find().skip(skip).limit(limit);
+    
+    res.json({
+        products,
+        paging: {
+            totalCount,
+            currentPage: page,
+            totalPages: Math.ceil(totalCount / limit),
+            limit
+        }
+    });
 });
-
-
-exports.getProductsByPagination = catchAsyncErrors(async (req, res, next) => {
-    const { page = 1, limit = 6 } = req.query;
-
-    const products = await paginateAllProducts(parseInt(page), parseInt(limit));
-
-    res.status(200).json(products);
-});
-
-
 
 
 

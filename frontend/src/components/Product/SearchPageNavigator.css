@@ -16,7 +16,7 @@
 }
 
 .number-active {
-  background-color: rgba(54, 38, 167, 0.3);
+  background-color: yellow;
   border-radius: 3px;
 }
 
@@ -39,6 +39,7 @@
 }
 
 .catalog-search-page-number:hover {
-  background-color: rgba(54, 38, 167, 0.3);
+  color: white;
+  background-color: #fa9c23;;
   border-radius: 3px;
 }

@@ -4,16 +4,14 @@ const Product = require("../models/product");
 
 
 
-async function search(name, page, limit) {
+async function search(query, page, limit) {
     try {
         let products = await Product.find();
         let filteredProduct = [];
 
         products.forEach((product) => {
-            if (name) {
-                if (product.name.toLowerCase().includes(name.toLowerCase()) && !filteredProduct.some(b => b['name'] === name)) {
-                    filteredProduct.push(product);
-                }
+            if (product.name.toLowerCase().includes(query.toLowerCase()) || product.description.toLowerCase().includes(query.toLowerCase())) {
+                filteredProduct.push(product);
             }
         });
 
@@ -52,31 +50,4 @@ async function paginateProducts(products, page, limit) {
 
 
 
-
-
-
-
-async function paginateAllProducts(page, limit) {
-    try {
-        const totalCount = await Product.countDocuments();
-        const totalPages = Math.ceil(totalCount / limit);
-
-        const products = await Product.find()
-            .skip((page - 1) * limit)
-            .limit(limit);
-
-        return {
-            totalCount,
-            currentPage: page,
-            totalPages,
-            limit,
-            pageCount: products.length,
-            items: products
-        };
-    } catch (error) {
-        console.error("Error paginating products:", error);
-        return { error: "Error paginating products." };
-    }
-}
-
-module.exports = { search, paginateAllProducts };
+module.exports = { search };

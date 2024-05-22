@@ -35,20 +35,21 @@ const Register = () => {
             navigate('/')
         }
         if (error) {
-            toast.error("Something is wrong");
+            toast.error("Please, fill in all fields");
         }
 
     }, [isAuthenticated, navigate, error])
 
 
-    const submitHandler = async (e) => { // promijenjeno u async
+    const submitHandler = async (e) => {
         e.preventDefault();
         const formData = new FormData();
         formData.set('name', user.name);
         formData.set('email', user.email);
         formData.set('password', user.password);
         formData.set('avatar', avatar);
-        await dispatch(registerUser(formData)); // koristi await
+        await dispatch(registerUser(formData));
+        toast.success("User successfully registred")
     }
 
     const onChange = e => {
@@ -60,19 +61,12 @@ const Register = () => {
                     setAvatar(reader.result)
                 }
             }
-
             reader.readAsDataURL(e.target.files[0])
         } else {
             setUser({ ...user, [e.target.name]: e.target.value })
         }
     }
 
-    // useEffect(() => {
-
-    //     return (() => {
-    //         dispatch(resetRegisterSuccess());
-    //     });
-    // }, [])
 
 
     return (
@@ -164,4 +158,3 @@ const Register = () => {
 }
 
 export default Register;
-

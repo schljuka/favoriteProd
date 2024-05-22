@@ -1,65 +1,68 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
-import "./SearchPageNavigator.css"
-
-
+import { fetchAllProducts } from "../../redux/slices/ProductSlice";
+import "./SearchPageNavigator.css";
 import { calculatePagingAll } from "../../utils/CatalogUtils";
 
-
-export const CatalogSearchPageNavigator = () => {
-
-
+export const SearchPageNavigator = () => {
+    const dispatch = useDispatch();
     const pagingInformation = useSelector(state => state.product.pagingInformation);
-
     const navigate = useNavigate();
     const { search } = useLocation();
+    const products = useSelector(state => state.product.products);
 
+    useEffect(() => {
+        const params = new URLSearchParams(search);
+        const page = params.get('page') || 1;
+        const limit = params.get('limit') || 6;
+        dispatch(fetchAllProducts({ page, limit }));
+    }, [dispatch, search]);
+
+    const updateURL = (newPage) => {
+        const params = new URLSearchParams(search);
+        params.set('page', newPage);
+        if (!params.has('limit')) {
+            params.set('limit', 6);
+        }
+        return `/products?${params.toString()}`;
+    };
 
     const navigatePrevious = () => {
         if (pagingInformation && pagingInformation.currentPage > 1) {
             const previousPage = pagingInformation.currentPage - 1;
-            const newTerms = search.includes("&page=") ? search.replace(/&page=\d+/, `&page=${previousPage}`) : `${search}&page=${previousPage}`;
-            navigate(`/products${newTerms}`);
+            navigate(updateURL(previousPage));
         }
-    }
+    };
 
     const navigateToNumber = (e) => {
         e.preventDefault();
-        if (search.includes("&page=")) {
-            const splitString = search.split("&page=");
-            const newTerms = splitString[0] + `&page=${e.currentTarget.id}`;
-            navigate(`/products${newTerms}`);
-        } else {
-            const newTerms = search + `&page=${e.currentTarget.id}`;
-            navigate(`/products${newTerms}`);
-        }
-    }
-    const navigateNext = () => {
-        if (pagingInformation && pagingInformation.currentPage < pagingInformation.totalPages) { // Check if current page is less than total pages
-            const nextPage = pagingInformation.currentPage + 1;
-            const newTerms = search.includes("&page=") ? search.replace(/&page=\d+/, `&page=${nextPage}`) : `${search}&page=${nextPage}`;
-            navigate(`/products${newTerms}`);
-        }
-    }
+        navigate(updateURL(e.currentTarget.id));
+    };
 
-    if (!pagingInformation) {
-        return null;
+    const navigateNext = () => {
+        if (pagingInformation && pagingInformation.currentPage < pagingInformation.totalPages) {
+            const nextPage = pagingInformation.currentPage + 1;
+            navigate(updateURL(nextPage));
+        }
+    };
+
+    if (products.length === 0) {
+        return <h2 className="mt-5">No Search Results Found</h2>;
     }
 
     return (
-
         <div className="catalog-search-page-navigator">
             <p className="catalog-search-page-navigator-navigate" onClick={navigatePrevious}>Prev</p>
             <div className="catalog-search-page-numbers">
                 {pagingInformation && calculatePagingAll(pagingInformation).map((num) => {
                     if (num === `${pagingInformation.currentPage}`) return <p key={num} className="catalog-search-page-number number-active">{num}</p>
-
                     return <p key={num} id={num} className="catalog-search-page-number" onClick={navigateToNumber}>{num}</p>
                 })}
             </div>
             <p className="catalog-search-page-navigator-navigate" onClick={navigateNext}>Next</p>
-        </div >
-    )
+        </div>
+    );
+};
 
-}
+export default SearchPageNavigator;

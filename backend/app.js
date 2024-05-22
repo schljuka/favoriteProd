@@ -10,7 +10,6 @@ const path = require('path')
 
 const errorMiddleware = require('./middlewares/errors')
 
-// Postavljanje config fajla
 dotenv.config({ path: 'backend/config/config.env' });
 app.use(bodyparser.json({limit: '50mb'}));
 app.use(bodyparser.urlencoded({limit: '50mb', extended: true}));
@@ -49,7 +48,7 @@ if (process.env.NODE_ENV === 'PRODUCTION') {
     })
 }
 
-// Middleware za rukovanje greškama
+
 app.use(errorMiddleware);
 
 module.exports = app;

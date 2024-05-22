@@ -1,25 +1,16 @@
-import React, { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
 import { MDBDataTable } from 'mdbreact'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import 'react-toastify/dist/ReactToastify.css'
+import { allUsers, deleteUser } from "../../redux/slices/UserSlice"
 import Loader from '../layout/Loader'
 import Sidebar from './Sidebar'
-import { useDispatch, useSelector } from 'react-redux'
-import toast from 'react-hot-toast';
-import 'react-toastify/dist/ReactToastify.css';
-import { allUsers, deleteUser } from "../../redux/slices/UserSlice";
-
-
-
 
 const UsersList = () => {
-
-
-
-    const navigate = useNavigate();
+    
     const dispatch = useDispatch();
     const { loading, users } = useSelector(state => state.user);
-
-
 
     useEffect(() => {
         dispatch(allUsers());
@@ -28,7 +19,6 @@ const UsersList = () => {
     const deleteUserHandler = (id) => {
         dispatch(deleteUser(id));
     }
-
 
     const setUsers = () => {
         const data = {

@@ -22,13 +22,12 @@ router.route('/order/:orderId/item/:itemId').delete(isAuthenticatedUser, deleteI
 
 
 
-// router.route('/admin/orders').get(isAuthenticatedUser, authorizeRoles('admin'), allOrders);
 router.route('/admin/orders').get(isAuthenticatedUser, allOrders);
 
 
 
-router.route('/admin/order/:id').put(isAuthenticatedUser, authorizeRoles('admin'), updateOrder);
-router.route('/admin/order/:id').delete(isAuthenticatedUser, authorizeRoles('admin'), deleteOrder);
+router.route('/admin/order/:id').put(isAuthenticatedUser, updateOrder);
+router.route('/admin/order/:id').delete(isAuthenticatedUser, deleteOrder);
 
 
 

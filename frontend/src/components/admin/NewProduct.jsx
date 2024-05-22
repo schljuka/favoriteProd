@@ -1,17 +1,13 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
 import Sidebar from './Sidebar'
-
 import { useDispatch, useSelector } from 'react-redux'
-
-import { addProduct } from '../../redux/slices/ProductSlice'
-
-
-import toast from 'react-hot-toast';
-import 'react-toastify/dist/ReactToastify.css';
+import { addProduct, clearCreatedStatus, clearErrorStatus } from '../../redux/slices/ProductSlice'
+import toast from 'react-hot-toast'
+import 'react-toastify/dist/ReactToastify.css'
 
 const NewProduct = () => {
+
 
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
@@ -22,6 +18,24 @@ const NewProduct = () => {
     const [imagesPreview, setImagesPreview] = useState([]);
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const created = useSelector(state => state.product.created)
+    const error = useSelector(state => state.product.error)
+
+    useEffect(() => {
+        if (created) {
+            toast.success("New product successfully created")
+            dispatch(clearCreatedStatus());
+            navigate("/admin/products")
+        }  
+        if (error) {
+            toast.error("Please, fill in all fields")
+            dispatch(clearErrorStatus());
+        }
+
+    }, [dispatch, created,error])
+
 
 
     const categories = [
@@ -30,7 +44,6 @@ const NewProduct = () => {
         'Laptops',
         'Accessories',
         'Headphones',
-        'Food',
         'Books',
         'Clothes/shoes',
         'Beauty/Health',
@@ -38,30 +51,6 @@ const NewProduct = () => {
         'Outdoor',
         'Home'
     ]
-
-
-
-    const dispatch = useDispatch();
-
-    const { loading, error, success } = useSelector(state => state.newProduct) || [];
-
-
-    useEffect(() => {
-
-        if (error) {
-            toast.error(error);
-            dispatch(clearErrors())
-        }
-
-        if (success) {
-            navigate("/admin/products")
-            toast.success('Product created successfully')
-            dispatch({ type: NEW_PRODUCT_RESET })
-        }
-    }, [dispatch, error, success, navigate])
-
-
-
 
     const submitHandler = (e) => {
         e.preventDefault();
@@ -81,7 +70,6 @@ const NewProduct = () => {
 
         }
         dispatch(addProduct(formData))
-
     }
 
     const onChange = e => {

@@ -1,11 +1,8 @@
 import React, { Fragment, useEffect, useState } from 'react';
-
 import Sidebar from './Sidebar';
-
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
-
 import { useNavigate, useParams } from 'react-router-dom';
 import { clearUpdateStatus, getUserDetails, updateUser } from '../../redux/slices/UserSlice';
 

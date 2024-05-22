@@ -13,7 +13,7 @@ const initialState = {
 };
 
 
-//STANISLAV
+
 export const createOrder = createAsyncThunk(
     '/api/order/new',
     async ({ orderItems }, { rejectWithValue }) => {
@@ -22,7 +22,6 @@ export const createOrder = createAsyncThunk(
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        // 'Authorization': `Bearer ${localStorage.getItem('token').replace('"','')}`
                         'Authorization': `Bearer ${localStorage.getItem('token')}`
                     }
                 }
@@ -73,22 +72,7 @@ export const deleteOrder = createAsyncThunk(
     }
 );
 
-// export const deleteItemFromOrder = createAsyncThunk(
-//     '/api/order/item/:orderId/:itemId',
-//     async ({ orderId, itemId }, thunkAPI) => {
-//         try {
-//             const response = await axios.delete(`http://localhost:5000/api/order/${orderId}/item/${itemId}`, {
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                     'Authorization': `Bearer ${localStorage.getItem('token')}`
-//                 }
-//             });
-//             return response.data.success;
-//         } catch (error) {
-//             return thunkAPI.rejectWithValue(error.response.data.errMessage);
-//         }
-//     }
-// );
+
 
 
 export const deleteItemFromOrder = createAsyncThunk(

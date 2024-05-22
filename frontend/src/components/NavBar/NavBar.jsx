@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-import ListProducts from "../Product/ListProducts";
 import { logout } from "../../redux/slices/AuthenticationSlice";
 
 import toast, { Toaster } from 'react-hot-toast';
@@ -11,8 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 import { useState } from 'react';
-import { fetchAllProducts, queryProducts } from '../../redux/slices/ProductSlice';
 import { myOrders } from '../../redux/slices/OrderSlice';
+import { queryProducts } from '../../redux/slices/ProductSlice';
 
 
 const NavBar = () => {
@@ -28,17 +26,11 @@ const NavBar = () => {
 
     const location = useLocation();
 
-
-
     const logoutHandler = () => {
         dispatch(logout());
         toast.success('Logged out successfully')
+        window.location.reload();
     }
-
-
-    useEffect(() => {
-        dispatch(queryProducts(location.search));
-    }, [location.search]);
 
     useEffect(() => {
         if (user) {
@@ -46,14 +38,11 @@ const NavBar = () => {
         }
     }, [dispatch, user])
 
-
-
-
     const searchHandler = (e) => {
         e.preventDefault();
         let query = "";
         if (nameRef && nameRef.current && nameRef.current.value !== " ") {
-            query += query === '' ? `?name=${nameRef.current.value}` : `&name=${nameRef.current.value}`
+            query += query === '' ? `?query=${nameRef.current.value}` : `&query=${nameRef.current.value}`
         }
         dispatch(queryProducts(query));
         navigate(`/products/query${query}`);
@@ -61,9 +50,7 @@ const NavBar = () => {
     };
 
 
-
-
-    return (
+   return (
         <div>
             <div className="home-page-container">
                 <nav className="navbar row">
@@ -82,11 +69,12 @@ const NavBar = () => {
                                     type="text"
                                     id="search_field"
                                     className="form-control"
-                                    placeholder="Enter Product Name ..."
+                                    placeholder="Enter product name or description..."
                                     name="keyword"
                                     value={keyword}
                                     ref={nameRef}
                                     onChange={(e) => setKeyword(e.target.value)}
+                                     autoComplete="off"
                                 />
                                 <div className="input-group-append">
                                     <button id="search_btn" className="btn">
@@ -138,3 +126,4 @@ const NavBar = () => {
 }
 
 export default NavBar
+

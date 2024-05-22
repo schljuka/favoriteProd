@@ -1,186 +1,8 @@
-// import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-// import axios from 'axios';
 
-// const initialState = {
-//     isAuthenticated: false,
-//     loading: false,
-//     error: false,
-//     registerSuccess: false
-// }
-
-// // login user
-// export const loginUser = createAsyncThunk(
-//     'api/login',
-//     async (user, thunkAPI) => {
-//         try {
-//             const req = await axios.post('http://localhost:5000/api/login', user);
-//             return req.data.user;
-//         } catch (e) {
-//             return thunkAPI.rejectWithValue(e);
-//         }
-//     }
-// )
-
-
-// // register user
-// export const registerUser = createAsyncThunk(
-//     'api/register',
-//     async (user, thunkAPI) => {
-//         try {
-//             const req = await axios.post('http://localhost:5000/api/register', user);
-//             return req.data.user
-//         } catch (e) {
-//             return thunkAPI.rejectWithValue(e);
-//         }
-//     }
-// )
-
-
-// // update user
-// export const updateUser = createAsyncThunk(
-//     'api/me/update',
-//     async (payload, thunkAPI) => {
-//         try {
-//             const req = await axios.put('http://localhost:5000/api/me/update', payload);
-//             return req.data.user;
-//         } catch (e) {
-//             return thunkAPI.rejectWithValue(e);
-//         }
-//     }
-// )
-
-
-
-
-// export const AuthenticationSlice = createSlice({
-//     name: "authentication",
-//     initialState,
-//     reducers: {
-//         resetRegisterSuccess(state) {
-//             state = {
-//                 ...state,
-//                 registerSuccess: false,
-//             }
-//             return state;
-//         },
-//         resetUser(state, action) {
-//             state = {
-//                 ...state,
-//                 [action.payload]: undefined
-//             }
-//             return state;
-//         }
-//     },
-//     extraReducers: (builder) => {
-//         // pending logic
-//         builder.addCase(loginUser.pending, (state, action) => {
-//             state = {
-//                 ...state,
-//                 error: false,
-//                 loading: true,
-//             }
-//             return state;
-//         });
-
-//         builder.addCase(registerUser.pending, (state, action) => {
-//             state = {
-//                 ...state,
-//                 error: false,
-//                 loading: true,
-//             }
-//             return state;
-//         })
-
-//         builder.addCase(updateUser.pending, (state, action) => {
-//             state = {
-//                 ...state,
-//                 error: false,
-//                 loading: true,
-//             }
-//             return state;
-//         })
-
-
-//         // resolved logic
-//         builder.addCase(loginUser.fulfilled, (state, action) => {
-//             state = {
-//                 ...state,
-//                 loading: false,
-//                 isAuthenticated: action.payload,
-//             }
-//             return state;
-//         });
-
-//         builder.addCase(registerUser.fulfilled, (state, action) => {
-//             state = {
-//                 ...state,
-//                 loading: false,
-//                 registerSuccess: true,
-//             }
-//             return state;
-//         })
-
-
-//         builder.addCase(updateUser.fulfilled, (state, action) => {
-//             state = {
-//                 ...state,
-//                 isAuthenticated: action.payload,
-//                 loading: false
-//             }
-//             return state;
-//         })
-
-//         // rejected logic
-//         builder.addCase(loginUser.rejected, (state, action) => {
-//             state = {
-//                 ...state,
-//                 error: true,
-//                 loading: false,
-//             }
-//             return state;
-//         })
-
-//         builder.addCase(registerUser.rejected, (state, action) => {
-//             state = {
-//                 ...state,
-//                 // error: true,
-//                 error: action.error.message,
-//                 loading: false
-//             }
-//             return state;
-//         })
-
-
-//         builder.addCase(updateUser.rejected, (state, action) => {
-//             state = {
-//                 ...state,
-//                 error: true,
-//                 loading: false
-//             }
-//             return state;
-//         })
-
-
-//     }
-// });
-
-// export const { resetRegisterSuccess, resetUser } = AuthenticationSlice.actions;
-
-// export default AuthenticationSlice.reducer;
-
-
-
-
-
-
-// -----------------------
-
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import Cookies from 'js-cookie';
 
 
-// Define initial state
 const initialState = {
     user: JSON.parse(localStorage.getItem('user')) ?? null,
     loading: false,
@@ -195,8 +17,20 @@ export const registerUser = createAsyncThunk(
     'api/register',
     async (user, thunkAPI) => {
         try {
-            const req = await axios.post('http://localhost:5000/api/register', user);
-            return req.data.user
+            const req = await axios.post('http://localhost:5000/api/register', user, {
+                headers: {
+                    'Content-Type': 'application/json',
+
+                }
+            });
+            const token = req.data.token;
+            if (token) {
+                localStorage.setItem('token', token);
+            } else {
+                console.error('Token is undefined');
+            }
+
+            return req.data.user;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
         }
@@ -211,7 +45,12 @@ export const loginUser = createAsyncThunk(
     async (user, thunkAPI) => {
         try {
             const req = await axios.post('http://localhost:5000/api/login', user);
-
+            const token = req.data.token;
+            if (token) {
+                localStorage.setItem('token', token);
+            } else {
+                console.error('Token is undefined');
+            }
             return req.data;
         } catch (e) {
             return thunkAPI.rejectWithValue(e);
@@ -237,7 +76,8 @@ export const logout = createAsyncThunk(
 
 
 
-// Define user slice
+
+
 const authenticationSlice = createSlice({
     name: 'authentication',
     initialState,
@@ -261,6 +101,7 @@ const authenticationSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload;
+                localStorage.setItem('user', JSON.stringify(action.payload));
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
@@ -275,10 +116,7 @@ const authenticationSlice = createSlice({
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.user = action.payload.user;
-
                 localStorage.setItem('user', JSON.stringify(state.user))
-                localStorage.setItem('token', action.payload.token)
-
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
@@ -288,7 +126,7 @@ const authenticationSlice = createSlice({
             .addCase(logout.pending, (state) => {
                 state.loading = true;
             })
-            .addCase(logout.fulfilled, (state, action) => {
+            .addCase(logout.fulfilled, (state) => {
                 state.loading = false;
                 state.isAuthenticated = false;
                 state.user = null;

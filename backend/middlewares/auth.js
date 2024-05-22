@@ -6,7 +6,8 @@ const jwt = require('jsonwebtoken')
 
 
 // Checks if user is authenticated or not
-// ORIGINAL
+
+// OLD Settings
 // exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
 
 //     const { token } = req.cookies
@@ -23,7 +24,7 @@ const jwt = require('jsonwebtoken')
 
 
 
-// STANISLAV
+// NEW Settings
 exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
 
     const bearerHeader = req.headers['authorization'];

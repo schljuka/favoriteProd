@@ -29,7 +29,6 @@ const Cart = () => {
         <div>
             <div className="container container-fluid">
                 <div>
-                    {/* <h2 className="mt-5">Your Favorite Item: <b>{orders.length} items</b></h2> */}
                     <div className="row d-flex justify-content-between">
                         <div className="col-12 col-lg-8">
                             {orders && orders.length > 0 ? (
@@ -83,35 +82,3 @@ export default Cart;
 
 
 
-
-
-// orders.orderItems.map(item => (
-//     <div key={item.product}>
-//         <hr />
-
-
-//         <div className="cart-item">
-//             <div className="row">
-//                 <div className="col-4 col-lg-3">
-//                     <img src={item.image} alt="Laptop" height="90" width="115" />
-//                 </div>
-
-//                 <div className="col-5 col-lg-3">
-//                     <Link to={`/products/${item.product}`}>{item.name}</Link>
-//                 </div>
-
-
-//                 <div className="col-4 col-lg-2 mt-4 mt-lg-0">
-//                     <p id="card_item_price">{item.price} €</p>
-//                 </div>
-
-
-//                 <div className="col-4 col-lg-1 mt-4 mt-lg-0">
-//                     <i id="delete_cart_item" className="fa fa-trash btn btn-danger" onClick={() => removeCartItemHandler(item.product)}></i>
-//                 </div>
-
-//             </div>
-//         </div>
-//     </div>
-// ))
-// }
